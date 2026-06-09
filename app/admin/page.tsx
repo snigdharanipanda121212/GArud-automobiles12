@@ -45,6 +45,7 @@ export default function AdminHubPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // CRM state
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -139,24 +140,33 @@ export default function AdminHubPage() {
 
   if (!isMounted) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const defaultUsername = 'Garudautomobiles';
-    const defaultPassword = 'garudautomobiles@1512025';
+    setIsLoggingIn(true);
+    setLoginError('');
 
-    // Retrieve environment values or fall back to code defaults
-    const targetUsername = (process.env.NEXT_PUBLIC_ADMIN_USERNAME || defaultUsername).trim().toLowerCase();
-    const targetPassword = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || defaultPassword).trim();
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const enteredUsername = username.trim().toLowerCase();
-    const enteredPassword = password.trim();
+      const data = await response.json();
 
-    if (enteredUsername === targetUsername && enteredPassword === targetPassword) {
-      localStorage.setItem('garuda_admin_logged', 'true');
-      setIsLoggedIn(true);
-      setLoginError('');
-    } else {
-      setLoginError('Invalid dealership username or password coordinates. Make sure there are no typos.');
+      if (response.ok && data.success) {
+        localStorage.setItem('garuda_admin_logged', 'true');
+        setIsLoggedIn(true);
+        setLoginError('');
+      } else {
+        setLoginError(data.error || 'Invalid dealership username or password coordinates. Make sure there are no typos.');
+      }
+    } catch (err) {
+      setLoginError('Authentication service is currently offline. Please try again.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -310,9 +320,10 @@ export default function AdminHubPage() {
               <button
                 id="admin-login-submit"
                 type="submit"
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-black font-extrabold text-sm py-3.5 rounded-xl hover:brightness-110 active:scale-95 transition cursor-pointer"
+                disabled={isLoggingIn}
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-black font-extrabold text-sm py-3.5 rounded-xl hover:brightness-110 active:scale-95 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In to CRM Dashboard
+                {isLoggingIn ? "Signing In to CRM..." : "Sign In to CRM Dashboard"}
               </button>
             </div>
           </form>
