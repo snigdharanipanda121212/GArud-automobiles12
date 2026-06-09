@@ -31,7 +31,9 @@ import {
   Sparkles,
   BookOpenCheck,
   Star,
-  CheckCircle2
+  CheckCircle2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function AdminHubPage() {
@@ -41,6 +43,7 @@ export default function AdminHubPage() {
   // Login credentials state
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
 
   // CRM state
@@ -138,12 +141,22 @@ export default function AdminHubPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'Garudautomobiles' && password === 'garudautomobiles@1522025') {
+    const defaultUsername = 'Garudautomobiles';
+    const defaultPassword = 'garudautomobiles@1512025';
+
+    // Retrieve environment values or fall back to code defaults
+    const targetUsername = (process.env.NEXT_PUBLIC_ADMIN_USERNAME || defaultUsername).trim().toLowerCase();
+    const targetPassword = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || defaultPassword).trim();
+
+    const enteredUsername = username.trim().toLowerCase();
+    const enteredPassword = password.trim();
+
+    if (enteredUsername === targetUsername && enteredPassword === targetPassword) {
       localStorage.setItem('garuda_admin_logged', 'true');
       setIsLoggedIn(true);
       setLoginError('');
     } else {
-      setLoginError('Invalid dealership username or password coordinates.');
+      setLoginError('Invalid dealership username or password coordinates. Make sure there are no typos.');
     }
   };
 
@@ -237,7 +250,7 @@ export default function AdminHubPage() {
         
         <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-8 w-full max-w-md shadow-2xl space-y-6 relative z-10">
           <div className="text-center space-y-3">
-            <div className="mx-auto bg-amber-500/10 text-amber-500 p-3 h-12 w-12 rounded-xl flex items-center justify-center">
+            <div className="mx-auto bg-amber-500/10 text-amber-500 p-3 h-12 w-12 rounded-xl flex items-center justify-center animate-pulse">
               <Lock className="w-6 h-6" />
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight leading-none font-sans uppercase">
@@ -264,15 +277,26 @@ export default function AdminHubPage() {
 
             <div>
               <label className="block text-zinc-400 text-xs font-semibold mb-1.5 uppercase font-mono">Brahmapur Key Password</label>
-              <input
-                id="admin-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-zinc-900/60 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition-all font-sans"
-                placeholder="Password codes e.g. garud..."
-                required
-              />
+              <div className="relative">
+                <input
+                  id="admin-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-zinc-900/60 border border-zinc-800 text-white rounded-xl pl-4 pr-11 py-3 text-sm focus:outline-none focus:border-amber-500 transition-all font-sans"
+                  placeholder="Password codes e.g. garud..."
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-amber-500 transition-all p-1 cursor-pointer flex items-center justify-center"
+                  style={{ background: 'none', border: 'none' }}
+                  title={showPassword ? 'Hide Password' : 'Show Password'}
+                >
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+                </button>
+              </div>
             </div>
 
             {loginError && (
@@ -282,20 +306,16 @@ export default function AdminHubPage() {
               </p>
             )}
 
-            <button
-              id="admin-login-submit"
-              type="submit"
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-black font-extrabold text-sm py-3.5 rounded-xl hover:brightness-110 active:scale-95 transition cursor-pointer"
-            >
-              Sign In to CRM Dashboard
-            </button>
+            <div className="pt-2">
+              <button
+                id="admin-login-submit"
+                type="submit"
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-black font-extrabold text-sm py-3.5 rounded-xl hover:brightness-110 active:scale-95 transition cursor-pointer"
+              >
+                Sign In to CRM Dashboard
+              </button>
+            </div>
           </form>
-
-          <div className="text-center pt-2">
-            <span className="text-[10px] text-zinc-650 leading-relaxed max-w-xs block mx-auto">
-              * Verification keys are managed inside showroom deployment files. Contact corporate sales for resets.
-            </span>
-          </div>
         </div>
       </div>
     );
