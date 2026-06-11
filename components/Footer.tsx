@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Landmark, Phone, Mail, MapPin, Clock, ShieldCheck } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, ShieldCheck } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -10,8 +10,13 @@ export default function Footer() {
         {/* Brand & Authorization Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="bg-amber-500/10 p-2 rounded-lg text-amber-500">
-              <Landmark className="w-5 h-5" />
+            <div className="bg-white p-1 rounded-lg w-9 h-9 flex items-center justify-center ring-1 ring-amber-500/25 shrink-0">
+              <img
+                src="/garud_emblem.png"
+                alt="Garud Emblem"
+                className="w-8 h-8 object-contain"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <span className="text-white font-extrabold tracking-wider font-mono">
               GARUD AUTOMOBILES

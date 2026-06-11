@@ -21,6 +21,9 @@ const monoFont = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Garud Automobiles | Premium Electric Vehicles Ganjam',
   description: 'Authorized Dealership for high-specification E-Scooters, Heavy Duty Cargo Loaders, E-Rickshaws and Commercial Food/Ice Cream Vans. Bijipur Main Rd, Sundar Nagar, Brahmapur, Odisha.',
+  verification: {
+    google: 'CrcPdaWrQNKrs-HHFI0mgGv4IejwNgeKVJ0JvIakGDI',
+  },
 };
 
 export default function RootLayout({

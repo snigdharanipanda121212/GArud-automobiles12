@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Landmark, Send, Phone } from 'lucide-react';
+import { Menu, X, Send, Phone } from 'lucide-react';
 import { useEnquiry } from '@/hooks/use-enquiry';
 
 export default function Navbar() {
@@ -28,8 +28,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo Brand */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative bg-gradient-to-tr from-amber-500 to-amber-300 p-2.5 rounded-xl text-black shadow-lg shadow-amber-950/20 group-hover:scale-105 transition-all">
-              <Landmark className="w-6 h-6 stroke-[2]" />
+            <div className="relative bg-white p-1 rounded-xl shadow-lg ring-1 ring-amber-500/30 overflow-hidden w-12 h-12 flex items-center justify-center group-hover:scale-105 transition-all">
+              <img
+                src="/garud_emblem.png"
+                alt="Garud Emblem"
+                className="w-10 h-10 object-contain"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div>
               <span className="block text-lg font-extrabold tracking-wider text-white uppercase font-mono">
