@@ -295,7 +295,7 @@ export default function ContactPage() {
                     className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl text-sm font-extrabold cursor-pointer transition bg-gradient-to-r from-amber-500 to-orange-600 text-black shadow-lg shadow-amber-500/10 hover:brightness-105 active:scale-[0.99]"
                   >
                     <Send className="w-4 h-4" />
-                    {isSubmitting ? 'Submitting Enquiry...' : 'Submit Enquiry'}
+                    {isSubmitting ? 'Submitting Inquiry...' : 'Submit Inquiry'}
                   </button>
 
                 </form>

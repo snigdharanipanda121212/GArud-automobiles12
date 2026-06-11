@@ -33,8 +33,75 @@ import {
   Star,
   CheckCircle2,
   Eye,
-  EyeOff
+  EyeOff,
+  Upload,
+  FolderOpen,
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
+
+const VEHICLE_IMAGE_LIBRARY = [
+  {
+    name: 'Standard Cargo Loader (Ocean Blue)',
+    category: 'E-Loader',
+    url: 'https://images.unsplash.com/photo-1558441719-ff34b0524a24?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Robust Industrial Hauler (Red/Black)',
+    category: 'E-Loader',
+    url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Modern Garud Cargo Loader Core',
+    category: 'E-Loader',
+    url: 'https://picsum.photos/seed/eloader/600/400',
+  },
+  {
+    name: 'Classic Yellow Cab E-Rickshaw',
+    category: 'E-Rickshaw',
+    url: 'https://picsum.photos/seed/erickshaw/600/400',
+  },
+  {
+    name: 'Smart Urban Passenger Trike',
+    category: 'E-Rickshaw',
+    url: 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Deluxe Multi-Passenger E-Rickshaw',
+    category: 'E-Rickshaw',
+    url: 'https://picsum.photos/seed/evsco/600/400',
+  },
+  {
+    name: 'Garud Mobile Food Van Core',
+    category: 'Food Van',
+    url: 'https://picsum.photos/seed/foodvan/600/400',
+  },
+  {
+    name: 'Stainless Steel Snack Stall Mobile',
+    category: 'Food Van',
+    url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Garud Polar Freezer Unit',
+    category: 'Ice Cream Van',
+    url: 'https://picsum.photos/seed/icecream/600/400',
+  },
+  {
+    name: 'Streetside Mobile Parlor Dispenser',
+    category: 'Ice Cream Van',
+    url: 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Garud Smart Lithium Cell Pack',
+    category: 'Battery',
+    url: 'https://picsum.photos/seed/battery/600/400',
+  },
+  {
+    name: 'Active Pack BMS Lithium Unit',
+    category: 'Battery',
+    url: 'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?w=600&auto=format&fit=crop&q=80',
+  },
+];
 
 export default function AdminHubPage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -81,6 +148,11 @@ export default function AdminHubPage() {
     features: ['LED Projection Lamp', 'Regenerative Braking'],
     motorType: '1200W Waterproof Brushless DC Motor'
   });
+
+  // Image Library state managers
+  const [showImageLibrary, setShowImageLibrary] = useState(false);
+  const [selectedLibraryCategory, setSelectedLibraryCategory] = useState<'All' | Vehicle['category']>('All');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   
   // Active editing notes state
   const [editingNotes, setEditingNotes] = useState<{ [id: string]: string }>({});
@@ -228,7 +300,7 @@ export default function AdminHubPage() {
     setNewVehicle({
       name: '',
       category: 'E-Loader',
-      price: '₹1,45,000',
+      price: '₹1,45,005',
       range: '90-100 km',
       batteryType: '60V Lithium Cells',
       chargingTime: '4 Hours',
@@ -239,6 +311,37 @@ export default function AdminHubPage() {
       features: ['LED Projection Lamp', 'Regenerative Braking'],
       motorType: '1200W Waterproof Brushless DC Motor'
     });
+  };
+
+  const handleLocalImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Selected file is not an image. Please pick an image file (PNG/JPG/WEBP).');
+      return;
+    }
+
+    setUploadProgress(10);
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev === null) return null;
+        if (prev >= 100) {
+          clearInterval(interval);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+             setNewVehicle(prevVeh => ({
+               ...prevVeh,
+               imageUrl: reader.result as string
+             }));
+             setUploadProgress(null);
+          };
+          reader.readAsDataURL(file);
+          return 100;
+        }
+        return prev + 30;
+      });
+    }, 150);
   };
 
   const handleDeleteVehicle = (id: string) => {
@@ -659,15 +762,95 @@ export default function AdminHubPage() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-zinc-400 text-xs font-semibold mb-1.5">Image URL *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newVehicle.imageUrl}
-                      onChange={(e) => setNewVehicle({ ...newVehicle, imageUrl: e.target.value })}
-                      className="w-full bg-zinc-905 border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-amber-500"
-                    />
+                  <div className="col-span-1 md:col-span-3 bg-zinc-900/10 border border-zinc-900/40 p-4 rounded-2xl flex flex-col md:flex-row gap-5">
+                    {/* Visual thumbnail preview */}
+                    <div className="w-full md:w-40 h-28 relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950/80 flex flex-col items-center justify-center group shrink-0">
+                      {newVehicle.imageUrl ? (
+                        <>
+                          <img
+                            src={newVehicle.imageUrl}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-[10px] text-zinc-400 font-mono">Active Link</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center p-3">
+                          <ImageIcon className="w-6 h-6 text-zinc-650 mx-auto mb-1" />
+                          <span className="text-[10px] text-zinc-550 font-mono">No Image</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Controls & Inputs */}
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <label className="block text-zinc-400 text-xs font-semibold uppercase font-mono tracking-wider">Vehicle Catalog Image *</label>
+                        <div className="flex items-center gap-2">
+                          {/* Choose from Preset Library Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentCat = newVehicle.category;
+                              setSelectedLibraryCategory(currentCat);
+                              setShowImageLibrary(true);
+                            }}
+                            className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-amber-500 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition active:scale-95"
+                          >
+                            <FolderOpen className="w-3.5 h-3.5" />
+                            Browse Library Presets
+                          </button>
+
+                          {/* Upload Local File Button */}
+                          <label className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition active:scale-95">
+                            <Upload className="w-3.5 h-3.5" />
+                            Upload Local Photo
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleLocalImageUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          value={newVehicle.imageUrl}
+                          onChange={(e) => setNewVehicle({ ...newVehicle, imageUrl: e.target.value })}
+                          className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl pl-4 pr-16 py-2.5 text-xs focus:outline-none focus:border-amber-500 font-mono"
+                          placeholder="Or paste direct image URL links here..."
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-zinc-500 font-mono">
+                          URL LINK
+                        </div>
+                      </div>
+
+                      {/* Upload loader status if loading */}
+                      {uploadProgress !== null && (
+                        <div className="space-y-1 animate-pulse">
+                          <div className="flex justify-between text-[10px] font-mono text-amber-500">
+                            <span>Uploading local media...</span>
+                            <span>{uploadProgress}%</span>
+                          </div>
+                          <div className="w-full h-1 bg-zinc-900 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-amber-500 transition-all duration-150" 
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      
+                      <p className="text-[10px] text-zinc-500 font-sans leading-relaxed">
+                        Customize catalog preview using real-time local file uploads (supports auto-base64 offline sync) or curated stock configurations from our Brahmapur image library setup.
+                      </p>
+                    </div>
                   </div>
 
                   <div className="col-span-3 pt-4 border-t border-zinc-900 flex justify-end gap-3">
@@ -937,6 +1120,100 @@ export default function AdminHubPage() {
         </div>
 
       </div>
+
+      {/* Image Library Selector Modal */}
+      {showImageLibrary && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-300">
+          <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+            <button 
+              type="button"
+              onClick={() => setShowImageLibrary(false)}
+              className="absolute right-6 top-6 text-zinc-500 hover:text-white transition cursor-pointer p-1.5 hover:bg-zinc-900 rounded-full flex items-center justify-center"
+              title="Close Panel"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="mb-6">
+              <h3 className="text-xl font-bold font-mono tracking-wider text-amber-500 flex items-center gap-2 uppercase">
+                <FolderOpen className="text-amber-500 w-5 h-5 animate-pulse" />
+                Showroom Image Library Presets
+              </h3>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
+                Select an optimized catalog image below to instantly register this vehicle's specification preview.
+              </p>
+              
+              {/* Filter tabs */}
+              <div className="flex flex-wrap gap-1.5 bg-zinc-900/40 p-1 rounded-xl border border-zinc-800/80 mt-4 max-w-max">
+                {(['All', 'E-Loader', 'E-Rickshaw', 'Food Van', 'Ice Cream Van', 'Battery'] as const).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedLibraryCategory(cat)}
+                    className={`px-3 py-1.5 rounded-lg text-2xs uppercase font-mono tracking-wider transition cursor-pointer ${
+                      selectedLibraryCategory === cat 
+                        ? 'bg-amber-500 text-black font-extrabold shadow-sm' 
+                        : 'text-zinc-400 hover:text-white hover:bg-zinc-850'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-h-[50vh] overflow-y-auto pr-2">
+              {VEHICLE_IMAGE_LIBRARY
+                .filter((item) => selectedLibraryCategory === 'All' || item.category === selectedLibraryCategory)
+                .map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setNewVehicle(prev => ({ ...prev, imageUrl: item.url }));
+                      setShowImageLibrary(false);
+                    }}
+                    className={`group flex flex-col text-left border rounded-2xl overflow-hidden hover:border-amber-500/80 active:scale-[0.98] transition duration-200 bg-zinc-900/10 ${
+                      newVehicle.imageUrl === item.url 
+                        ? 'border-amber-500 ring-2 ring-amber-500/20' 
+                        : 'border-zinc-900'
+                    }`}
+                  >
+                    <div className="relative aspect-video w-full overflow-hidden bg-zinc-950">
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-2 left-2 bg-zinc-950/80 backdrop-blur-sm border border-zinc-900 text-[8px] font-mono uppercase text-amber-500 px-1.5 py-0.5 rounded">
+                        {item.category}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-zinc-900/30 flex-1 flex flex-col justify-between">
+                      <h5 className="text-[11px] font-bold text-white line-clamp-1 group-hover:text-amber-400 transition">
+                        {item.name}
+                      </h5>
+                      <span className="text-[9px] text-zinc-550 mt-1.5 font-mono line-clamp-1 truncate block">
+                        {item.url}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowImageLibrary(false)}
+                className="bg-zinc-900 hover:bg-zinc-850 text-white text-xs font-semibold px-5 py-2.5 rounded-xl cursor-pointer transition active:scale-95 border border-zinc-850"
+              >
+                Close Presets Picker
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

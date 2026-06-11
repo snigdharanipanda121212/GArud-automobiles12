@@ -34,6 +34,8 @@ export default function HomePage() {
   const [prefCategory, setPrefCategory] = useState<string>('All');
   const [prefBattery, setPrefBattery] = useState<string>('All');
   const [prefPriceLimit, setPrefPriceLimit] = useState<number>(250000);
+  const [minPrice, setMinPrice] = useState<number>(60000);
+  const [maxPrice, setMaxPrice] = useState<number>(250000);
   const [matchResult, setMatchResult] = useState<Vehicle[]>([]);
 
   // 3D Mouse tilt effect values
@@ -47,6 +49,16 @@ export default function HomePage() {
     const nonScooters = all.filter(v => v.category !== ('E-Scooter' as any));
     setVehicles(nonScooters);
     setFeaturedVehicles(nonScooters.filter(v => v.featured));
+
+    // Dynamic price limit calculation based on catalog content
+    const prices = nonScooters.map(v => parseInt(v.price.replace(/[^0-9]/g, ''), 10)).filter(p => !isNaN(p));
+    if (prices.length > 0) {
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      setMinPrice(min);
+      setMaxPrice(max);
+      setPrefPriceLimit(max); // Automatically set to show full catalog by default
+    }
   }, []);
 
   // Sync Finder matched list
@@ -435,7 +447,7 @@ export default function HomePage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-zinc-900 animate-in fade-in duration-500">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-3">
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Find Your Perfect E-Vehicle</h2>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight hover:text-amber-400 hover:drop-shadow-[0_4px_12px_rgba(245,158,11,0.55)] transition-all duration-300 cursor-default">Find Your Perfect E-Vehicle</h2>
             <p className="text-zinc-400 text-sm max-w-2xl font-sans">
               Filter configurations live! Customize your battery specs, drive system needs, and ex-showroom price limits to discover your ideal local neighborhood helper.
             </p>
@@ -506,16 +518,16 @@ export default function HomePage() {
               </div>
               <input
                 type="range"
-                min="60000"
-                max="250000"
+                min={minPrice}
+                max={maxPrice}
                 step="5000"
                 value={prefPriceLimit}
                 onChange={(e) => setPrefPriceLimit(Number(e.target.value))}
                 className="w-full accent-amber-500 h-1 bg-zinc-900 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-[9px] text-zinc-500 font-mono">
-                <span>₹60,000</span>
-                <span>₹2,50,000</span>
+                <span>₹{minPrice.toLocaleString()}</span>
+                <span>₹{maxPrice.toLocaleString()}</span>
               </div>
             </div>
 

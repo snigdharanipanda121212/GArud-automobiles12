@@ -358,7 +358,7 @@ export default function EnquiryModal() {
                   className="w-full flex items-center justify-center gap-3 py-3.5 px-5 rounded-xl text-sm font-extrabold cursor-pointer transition-all bg-gradient-to-r from-amber-500 to-orange-600 text-black shadow-lg hover:brightness-110 active:scale-[0.99]"
                 >
                   <Send className="w-4 h-4" />
-                  {isSubmitting ? 'Submitting Enquiry...' : 'Submit Enquiry'}
+                  {isSubmitting ? 'Submitting Inquiry...' : 'Submit Inquiry'}
                 </button>
               </form>
             )}
