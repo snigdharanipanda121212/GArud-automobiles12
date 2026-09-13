@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { X, Send, PhoneCall, Battery, Milestone, ShieldCheck, CheckCircle2, MessageSquareText } from 'lucide-react';
+import { X, Send, Battery, Milestone, ShieldCheck, CheckCircle2, MessageSquareText } from 'lucide-react';
 import { useEnquiry } from '@/hooks/use-enquiry';
 import { getVehicles, saveEnquiry, Vehicle } from '@/lib/store';
 
@@ -24,7 +24,7 @@ export default function EnquiryModal() {
   const [activeVehicle, setActiveVehicle] = useState<Vehicle | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, reset, setValue, formState: { errors, isValid, isSubmitting } } = useForm<EnquiryFormProps>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<EnquiryFormProps>({
     resolver: zodResolver(enquirySchema),
     defaultValues: {
       requirementType: 'Purchase Enquiry',
@@ -58,7 +58,7 @@ export default function EnquiryModal() {
   if (!isOpen) return null;
 
   // Pre-populated WhatsApp configuration
-  const dealerWhatsAppNumber = '918221822926'; // Authorized contact
+  const dealerWhatsAppNumber = '918950977904'; // Authorized contact: 8950977904
   const waPrepopulatedText = encodeURIComponent(
     `Hello Garud Automobiles Brahmapur, I am making a direct enquiry regarding the "${selectedVehicle || 'E-Vehicles'}". Please provide me with details on price quotations, color availability, down-payment schemes, and delivery dates.`
   );
@@ -117,13 +117,28 @@ export default function EnquiryModal() {
                   <img
                     src={activeVehicle.imageUrl}
                     alt={activeVehicle.name}
-                    className="w-full h-full object-cover grayscale opacity-80"
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute bottom-3 left-3 bg-zinc-950/90 backdrop-blur border border-zinc-800 px-3 py-1 rounded-lg">
                     <span className="text-amber-400 text-sm font-bold">{activeVehicle.price}</span>
                     <span className="text-[10px] text-zinc-500 block">Ex-Showroom Price</span>
                   </div>
                 </div>
+
+                {/* Available Colorways in enquiry sheet */}
+                {activeVehicle.colors && activeVehicle.colors.length > 0 && (
+                  <div className="bg-zinc-950/70 p-3 rounded-xl border border-zinc-900 space-y-1.5">
+                    <span className="text-[10px] text-zinc-400 uppercase font-mono font-semibold block">Available Colors:</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {activeVehicle.colors.map((c, i) => (
+                        <span key={i} className="inline-flex items-center gap-1.5 text-xs text-zinc-300 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-full">
+                          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: c.hex }} />
+                          <span>{c.name}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Spec List */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
@@ -171,6 +186,33 @@ export default function EnquiryModal() {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* SPEC SHEET DIRECT SUBMIT & QUOTE BUTTON BAR */}
+                <div className="pt-4 border-t border-zinc-800/90 space-y-2.5">
+                  <button
+                    id="spec-sheet-direct-submit-btn"
+                    type="button"
+                    onClick={() => {
+                      const phoneInput = document.getElementById('form-phone-input');
+                      if (phoneInput) {
+                        phoneInput.focus();
+                        phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:brightness-110 text-black font-extrabold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-lg cursor-pointer transition active:scale-[0.98] font-mono uppercase tracking-wider"
+                  >
+                    <Send className="w-4 h-4 stroke-[2.5]" />
+                    <span>Submit Spec Sheet Enquiry</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppDirectRedirect}
+                    className="w-full flex items-center justify-center gap-2 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer"
+                  >
+                    <MessageSquareText className="w-3.5 h-3.5" />
+                    <span>WhatsApp Quote (+91 89509 77904)</span>
+                  </button>
                 </div>
               </div>
             ) : (
@@ -350,16 +392,21 @@ export default function EnquiryModal() {
                   {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
                 </div>
 
-                {/* Submit Form Button */}
-                <button
-                  id="form-submit-btn"
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 px-5 rounded-xl text-sm font-extrabold cursor-pointer transition-all bg-gradient-to-r from-amber-500 to-orange-600 text-black shadow-lg hover:brightness-110 active:scale-[0.99]"
-                >
-                  <Send className="w-4 h-4" />
-                  {isSubmitting ? 'Submitting Inquiry...' : 'Submit Inquiry'}
-                </button>
+                {/* Submit Form Button - Sticky Bar so it is never hidden or scrolled out of view */}
+                <div className="sticky bottom-0 bg-zinc-950/95 backdrop-blur-md pt-3 pb-1 mt-2 border-t border-zinc-800/80 -mx-2 px-2 z-20">
+                  <button
+                    id="form-submit-btn"
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl text-sm font-black cursor-pointer transition-all bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 text-black shadow-xl hover:brightness-110 active:scale-[0.99] font-mono uppercase tracking-wider"
+                  >
+                    <Send className="w-4 h-4 stroke-[3]" />
+                    <span>{isSubmitting ? 'Submitting Spec Sheet Request...' : 'Submit Vehicle Spec Sheet Enquiry'}</span>
+                  </button>
+                  <p className="text-[10px] text-zinc-500 text-center mt-1.5 font-mono">
+                    Direct dispatch to Garud Automobiles (+91 89509 77904)
+                  </p>
+                </div>
               </form>
             )}
           </div>

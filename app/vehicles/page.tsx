@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getVehicles, Vehicle } from '@/lib/store';
 import { useEnquiry } from '@/hooks/use-enquiry';
-import { Search, SlidersHorizontal, BatteryCharging, Milestone, ShieldCheck, HeartCrack } from 'lucide-react';
+import { Search, SlidersHorizontal, ShieldCheck, HeartCrack } from 'lucide-react';
 
 export default function VehiclesPage() {
   const { openEnquiry } = useEnquiry();
@@ -131,7 +131,7 @@ export default function VehiclesPage() {
                     <img
                       src={vehicle.imageUrl}
                       alt={vehicle.name}
-                      className="w-full h-full object-cover grayscale brightness-95 opacity-80 group-hover:scale-105 group-hover:opacity-95 transition-all duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                     />
                     
                     {/* Status Badge & Finance available tag */}
@@ -157,10 +157,35 @@ export default function VehiclesPage() {
                       {vehicle.name}
                     </h3>
 
+                    {/* Available Color Swatches */}
+                    {vehicle.colors && vehicle.colors.length > 0 && (
+                      <div className="pt-1">
+                        <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono mb-1.5">
+                          <span className="uppercase tracking-wider font-semibold text-zinc-400">Available Colorways:</span>
+                          <span className="text-zinc-500 font-mono text-[9px]">{vehicle.colors.length} shades</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {vehicle.colors.map((col, idx) => (
+                            <div
+                              key={idx}
+                              title={col.name}
+                              className="group/color relative flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 hover:border-amber-500/40 px-2.5 py-1 rounded-full cursor-default transition"
+                            >
+                              <span
+                                className="w-2.5 h-2.5 rounded-full border border-black/30 shadow-sm shrink-0"
+                                style={{ backgroundColor: col.hex }}
+                              />
+                              <span className="text-[11px] text-zinc-300 font-sans">{col.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* 2. Price */}
                     <div className="flex items-baseline gap-2 pt-1 border-b border-zinc-900 pb-3">
                       <span className="text-amber-400 font-mono font-extrabold text-2xl tracking-tight">{vehicle.price}</span>
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">Ex-Showroom Price</span>
+                      <span className="text-[10px] text-zinc-550 uppercase font-mono tracking-wider">Ex-Showroom Price</span>
                     </div>
 
                     {/* 3. Specs list: Battery, Capacity, Motor, Range */}

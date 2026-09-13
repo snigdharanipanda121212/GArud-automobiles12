@@ -70,7 +70,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <a
               id="nav-phone-btn"
-              href="tel:+918221822926"
+              href="tel:+918950977904"
               className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-amber-400 hover:text-amber-300 font-medium text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer"
             >
               <Phone className="w-3.5 h-3.5 text-amber-500" />
@@ -119,12 +119,12 @@ export default function Navbar() {
           <div className="pt-4 px-4 border-t border-zinc-900 space-y-2.5">
             <a
               id="mobile-phone-btn"
-              href="tel:+918221822926"
+              href="tel:+918950977904"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 bg-zinc-900 border border-zinc-800 text-amber-400 font-bold py-3 rounded-xl active:scale-95 transition-all text-sm cursor-pointer"
             >
               <Phone className="w-4 h-4 text-amber-500" />
-              Call Now (+91 82218 22926)
+              Call Now (+91 89509 77904)
             </a>
             <button
               id="mobile-enquiry-btn"

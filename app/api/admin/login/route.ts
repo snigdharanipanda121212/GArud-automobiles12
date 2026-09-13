@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       { success: false, error: "Invalid credentials. Please make sure there are no typos." },
       { status: 401 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, error: "Internal server validation failure." },
       { status: 500 }

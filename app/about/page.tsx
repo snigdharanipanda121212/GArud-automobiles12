@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Landmark, MapPin, Award, Users, ShieldAlert, BadgeInfo } from 'lucide-react';
+import { Landmark, MapPin, Award, Users, BadgeInfo } from 'lucide-react';
 import { useEnquiry } from '@/hooks/use-enquiry';
 
 export default function AboutPage() {

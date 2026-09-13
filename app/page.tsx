@@ -8,9 +8,7 @@ import { useEnquiry } from '@/hooks/use-enquiry';
 import { 
   Sparkles, 
   ArrowRight, 
-  BatteryCharging, 
   Coins, 
-  Settings2, 
   MapPin, 
   Star, 
   ChevronRight, 
@@ -18,7 +16,6 @@ import {
   Wrench, 
   Phone, 
   ShieldCheck, 
-  Truck, 
   ThumbsUp, 
   ExternalLink,
   MessageSquare
@@ -27,7 +24,6 @@ import {
 export default function HomePage() {
   const { openEnquiry } = useEnquiry();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [featuredVehicles, setFeaturedVehicles] = useState<Vehicle[]>([]);
   const container3dRef = useRef<HTMLDivElement>(null);
   
   // Interactive match states
@@ -48,7 +44,6 @@ export default function HomePage() {
     // Double safeguard to make sure no e-scooters are present
     const nonScooters = all.filter(v => v.category !== ('E-Scooter' as any));
     setVehicles(nonScooters);
-    setFeaturedVehicles(nonScooters.filter(v => v.featured));
 
     // Dynamic price limit calculation based on catalog content
     const prices = nonScooters.map(v => parseInt(v.price.replace(/[^0-9]/g, ''), 10)).filter(p => !isNaN(p));
@@ -210,11 +205,11 @@ export default function HomePage() {
 
               <a
                 id="hero-phone-cta"
-                href="tel:+918221822926"
+                href="tel:+918950977904"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-amber-400 font-bold px-7 py-4 rounded-xl transition-all text-xs uppercase tracking-wider font-mono cursor-pointer"
               >
                 <Phone className="w-4 h-4 text-amber-550" />
-                <span>Call Now</span>
+                <span>Call Now (+91 89509 77904)</span>
               </a>
 
               <Link
@@ -250,154 +245,96 @@ export default function HomePage() {
 
           </div>
 
-          {/* Right Column: Interactive Styled 3D Vehicle Model with Garud Branding */}
+          {/* Right Column: Interactive 3D Emblem Model with Garud Branding */}
           <div className="lg:col-span-5 h-full flex items-center justify-center">
             <div 
               ref={container3dRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              className="w-full max-w-[420px] aspect-square rounded-3xl bg-zinc-950/60 border border-zinc-900 p-8 flex flex-col justify-between relative overflow-hidden group [perspective:1000px] cursor-grab"
+              className="w-full max-w-[440px] aspect-square rounded-3xl bg-gradient-to-b from-zinc-900/90 via-zinc-950 to-black border border-amber-500/25 p-7 flex flex-col justify-between relative overflow-hidden group [perspective:1200px] cursor-grab select-none shadow-[0_20px_50px_rgba(0,0,0,0.9)] ring-1 ring-amber-500/20"
             >
-              {/* Subtle visual lighting glows on model */}
-              <div className="absolute inset-0 bg-radial-gradient from-amber-500/5 to-transparent pointer-events-none" />
+              {/* Subtle visual lighting glow on model */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(245,158,11,0.15),transparent_70%)] pointer-events-none" />
               
-              <div className="flex justify-between items-start relative z-10">
+              <div className="flex justify-between items-start relative z-20">
                 <div>
-                  <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 font-bold">BRAND IDENTITY EMBLEM</span>
-                  <h4 className="text-sm font-extrabold text-white mt-1">Official Garud Emblem</h4>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-amber-400 font-bold">BRAND IDENTITY EMBLEM</span>
+                  </div>
+                  <h4 className="text-sm sm:text-base font-extrabold text-white mt-1 flex items-center gap-2">
+                    <span>Official Garud Emblem</span>
+                    <span className="text-[10px] font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                      3D Gold
+                    </span>
+                  </h4>
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] font-mono text-zinc-500 block">Move Cursor</span>
+                  <span className="text-[10px] font-mono text-amber-400 font-bold">Interactive 3D</span>
                 </div>
               </div>
 
-              {/* Holographic Isometric EV SVG Model representing Rickshaw & Loader with "GARUD" branding */}
+              {/* Interactive 3D Multi-Layer Perspective Canvas */}
               <motion.div 
                 style={{ 
                   transformStyle: 'preserve-3d',
                   rotateX: rotateX,
                   rotateY: rotateY,
                 }}
-                className="relative w-full h-[220px] flex items-center justify-center my-6 transition-all duration-100 ease-out"
+                className="relative w-full h-[250px] flex items-center justify-center my-2 transition-transform duration-100 ease-out"
               >
-                {/* Embedded High Fidelity Gold Bird Wings Logo */}
-                <svg viewBox="0 0 500 500" className="w-[85%] h-full text-zinc-500 drop-shadow-[0_15px_30px_rgba(245,158,11,0.25)]">
-                  <defs>
-                    <linearGradient id="goldGradTilt" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FFF176" />
-                      <stop offset="30%" stopColor="#F5B041" />
-                      <stop offset="70%" stopColor="#D35400" />
-                      <stop offset="100%" stopColor="#F39C12" />
-                    </linearGradient>
-                    <linearGradient id="goldLightTilt" x1="0%" y1="100%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#D35400" />
-                      <stop offset="50%" stopColor="#F4D03F" />
-                      <stop offset="100%" stopColor="#F9E79F" />
-                    </linearGradient>
-                    <filter id="glowTilt" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="8" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
+                {/* 3D Layer 1: Ambient Golden Halo Backlight at Z=-35 */}
+                <div 
+                  style={{ transform: 'translateZ(-35px)' }}
+                  className="absolute w-60 h-60 rounded-full bg-gradient-to-tr from-amber-600/30 via-yellow-500/20 to-transparent blur-3xl pointer-events-none"
+                />
 
-                  {/* Outer glowing dust */}
-                  <circle cx="250" cy="220" r="160" fill="rgba(245, 158, 11, 0.03)" filter="url(#glowTilt)" />
+                {/* 3D Layer 2: 3D Depth Pedestal Ring at Z=-20 */}
+                <div 
+                  style={{ transform: 'translateZ(-20px) rotateX(70deg)' }}
+                  className="absolute bottom-2 w-56 h-56 rounded-full border border-amber-500/25 bg-amber-500/5 shadow-[0_0_40px_rgba(245,158,11,0.2)] pointer-events-none"
+                />
 
-                  {/* Golden Emblem Group with 3D depth */}
-                  <g transform="translate(0, -10)">
-                    {/* Eagle Head & Beak */}
-                    <path 
-                      d="M250,140 Q275,140 290,150 Q310,165 310,180 Q305,182 295,180 Q305,190 295,200 L275,195 Q255,235 250,260 Q245,235 225,195 L205,200 Q195,190 205,180 Q195,182 190,180 Q190,165 210,150 Q225,140 250,140 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="2" 
-                    />
-                    
-                    {/* Stylized sharp phoenix tail/base */}
-                    <polygon points="250,240 270,290 250,335 230,290" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1.5" />
-                    
-                    {/* Left Wing - Upper Layer */}
-                    <path 
-                      d="M235,215 Q145,170 100,70 Q130,150 200,210 Q215,220 235,215 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="2" 
-                    />
-                    {/* Left Wing - Middle Layer */}
-                    <path 
-                      d="M225,230 Q120,195 95,140 Q120,200 190,240 Q210,250 225,230 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="1.5" 
-                    />
-                    {/* Left Wing - Bottom Layer */}
-                    <path 
-                      d="M215,245 Q110,225 105,200 Q120,230 185,260 Q205,265 215,245 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="1" 
-                    />
-                    {/* Left Wing - Lower Feather */}
-                    <path 
-                      d="M205,260 Q125,255 135,240 Q145,255 180,270 L205,260 Z" 
-                      fill="url(#goldGradTilt)" 
-                    />
-
-                    {/* Right Wing - Upper Layer */}
-                    <path 
-                      d="M265,215 Q355,170 400,70 Q370,150 300,210 Q285,220 265,215 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="2" 
-                    />
-                    {/* Right Wing - Middle Layer */}
-                    <path 
-                      d="M275,230 Q380,195 405,140 Q380,200 310,240 Q290,250 275,230 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="1.5" 
-                    />
-                    {/* Right Wing - Bottom Layer */}
-                    <path 
-                      d="M285,245 Q390,225 395,200 Q380,230 315,260 Q295,265 285,245 Z" 
-                      fill="url(#goldGradTilt)" 
-                      stroke="url(#goldLightTilt)" 
-                      strokeWidth="1" 
-                    />
-                    {/* Right Wing - Lower Feather */}
-                    <path 
-                      d="M295,260 Q375,255 365,240 Q355,255 320,270 L295,260 Z" 
-                      fill="url(#goldGradTilt)" 
-                    />
-                  </g>
-
-                  {/* Brand Name Text: GARUD */}
-                  <g transform="translate(0, 385)">
-                    {/* Letter G */}
-                    <path d="M80,0 L135,0 L135,12 L95,12 L95,30 L135,30 L135,18 L120,18 L120,12 L147,12 L147,42 L80,42 Z" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1" />
-                    
-                    {/* Letter A */}
-                    <path d="M165,42 L165,0 L205,0 L205,42 L192,42 L192,25 L178,25 L178,42 Z M178,14 L192,14 L192,6 L178,6 Z" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1" />
-                    
-                    {/* Letter R */}
-                    <path d="M220,42 L220,0 L265,0 Q278,0 278,12 Q278,24 262,24 L278,42 L262,42 L249,24 L233,24 L233,42 Z M233,14 L260,14 A5,5 0 0,0 260,6 L233,6 Z" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1" />
-                    
-                    {/* Letter U */}
-                    <path d="M295,0 L308,0 L308,30 L342,30 L342,0 L355,0 L355,42 L295,42 Z" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1" />
-                    
-                    {/* Letter L */}
-                    <path d="M375,42 L375,0 L415,0 Q435,0 435,21 Q435,42 415,42 Z M388,32 L412,32 A10,10 0 0,0 412,10 L388,10 Z" fill="url(#goldGradTilt)" stroke="url(#goldLightTilt)" strokeWidth="1" />
-                  </g>
-                </svg>
-
-                {/* Animated status indicators floating */}
-                <div className="absolute top-1/4 right-[5%] bg-zinc-900/90 border border-zinc-800 text-[10px] text-zinc-300 px-2 py-1 rounded shadow block font-mono">
-                  🔥 Wings of Ganjam
+                {/* 3D Layer 3: OFFICIAL 3D GOLD EMBLEM ARTIFACT at Z=35 */}
+                <div 
+                  style={{ transform: 'translateZ(35px)' }}
+                  className="relative z-10 w-full h-full flex items-center justify-center filter drop-shadow-[0_25px_35px_rgba(245,158,11,0.45)] transition-all"
+                >
+                  <img
+                    src="/garud_emblem.png"
+                    alt="Official Garud 3D Golden Emblem - Legacy of Strength"
+                    className="max-h-[200px] w-auto object-contain select-none pointer-events-none scale-100 group-hover:scale-105 transition-transform duration-300"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
-                <div className="absolute bottom-1/4 left-[2%] bg-zinc-900/90 border border-zinc-800 text-[10px] text-amber-500 px-2 py-1 rounded shadow block font-mono">
-                  ⚡ 60V Lithium Power
+
+                {/* 3D Layer 4: Specular Golden Glint Overlay at Z=45 */}
+                <div 
+                  style={{ transform: 'translateZ(45px)' }}
+                  className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl opacity-40 mix-blend-overlay group-hover:opacity-75 transition-opacity"
+                >
+                  <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -rotate-45 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                </div>
+
+                {/* 3D Layer 5: Floating 3D Micro Badges at Z=60 */}
+                <div 
+                  style={{ transform: 'translateZ(60px)' }}
+                  className="absolute top-2 right-1 bg-zinc-950/90 border border-amber-500/40 text-[10px] text-amber-300 px-2.5 py-1 rounded-lg shadow-xl font-mono flex items-center gap-1.5 backdrop-blur-sm"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  <span>Wings of Ganjam</span>
+                </div>
+                <div 
+                  style={{ transform: 'translateZ(60px)' }}
+                  className="absolute bottom-2 left-1 bg-zinc-950/90 border border-amber-500/40 text-[10px] text-amber-400 px-2.5 py-1 rounded-lg shadow-xl font-mono flex items-center gap-1.5 backdrop-blur-sm"
+                >
+                  <span>⚡ 3D Gold Insignia</span>
                 </div>
               </motion.div>
 
-              <div className="border-t border-zinc-900 pt-3 flex justify-between text-[10px] text-zinc-550 font-mono relative z-10">
-                <span>OFFICIAL GARUD GOLD EMBLEM</span>
+              <div className="border-t border-zinc-900 pt-3 flex justify-between items-center text-[10px] text-zinc-500 font-mono relative z-20">
+                <span className="text-amber-400 font-bold">OFFICIAL 3D GARUD EMBLEM</span>
                 <span>BIJIPUR MAIN RD</span>
               </div>
             </div>
@@ -567,7 +504,7 @@ export default function HomePage() {
                         <img
                           src={vehicle.imageUrl}
                           alt={vehicle.name}
-                          className="w-full h-full object-cover grayscale brightness-95 opacity-80 group-hover:scale-105 group-hover:opacity-95 transition-all duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                         />
                         
                         {/* Dynamic category badge + Finance Available label */}
@@ -592,6 +529,31 @@ export default function HomePage() {
                         <h3 className="font-extrabold text-white text-base sm:text-lg group-hover:text-amber-450 transition tracking-tight leading-tight">
                           {vehicle.name}
                         </h3>
+
+                        {/* Available Color Swatches */}
+                        {vehicle.colors && vehicle.colors.length > 0 && (
+                          <div className="pt-1">
+                            <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono mb-1.5">
+                              <span className="uppercase tracking-wider font-semibold text-zinc-400">Colors Available:</span>
+                              <span className="text-zinc-500 font-mono text-[9px]">{vehicle.colors.length} variants</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {vehicle.colors.map((col, idx) => (
+                                <div
+                                  key={idx}
+                                  title={col.name}
+                                  className="group/color relative flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 hover:border-amber-500/40 px-2 py-0.5 rounded-full cursor-default transition"
+                                >
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full border border-black/30 shadow-sm shrink-0"
+                                    style={{ backgroundColor: col.hex }}
+                                  />
+                                  <span className="text-[10px] text-zinc-300 font-sans">{col.name}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Ex-showroom Pricing */}
                         <div className="flex items-baseline gap-2 pt-1 border-b border-zinc-900 pb-3">
@@ -746,8 +708,8 @@ export default function HomePage() {
                 <Phone className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <span className="text-xs text-zinc-500 uppercase font-bold tracking-wider font-mono block mb-1">Direct Help coordinates</span>
-                  <a href="tel:+918221822926" className="text-amber-500 hover:underline text-xs sm:text-sm font-semibold font-mono block">
-                    +91 82218 22926
+                  <a href="tel:+918950977904" className="text-amber-500 hover:underline text-xs sm:text-sm font-semibold font-mono block">
+                    +91 89509 77904
                   </a>
                 </div>
               </div>
@@ -842,11 +804,11 @@ export default function HomePage() {
           
           <a
             id="final-call-cta-btn"
-            href="tel:+918221822926"
+            href="tel:+918950977904"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-amber-500 hover:text-amber-400 font-bold px-8 py-4 rounded-xl border border-zinc-800 transition duration-300 text-xs uppercase tracking-wider font-mono cursor-pointer"
           >
             <Phone className="w-4 h-4" />
-            <span>Call +91 82218 22926</span>
+            <span>Call +91 89509 77904</span>
           </a>
         </div>
       </section>

@@ -23,7 +23,7 @@ export default function ContactPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors, isValid, isSubmitting } } = useForm<ContactFormProps>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactFormProps>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       requirementType: 'Purchase Enquiry',
@@ -60,9 +60,9 @@ export default function ContactPage() {
     {
       icon: <Phone className="w-5 h-5 text-amber-500" />,
       title: 'Showroom Phone',
-      value: '+91 82218 22926',
+      value: '+91 89509 77904',
       desc: 'Call & WhatsApp support',
-      link: 'tel:+918221822926'
+      link: 'tel:+918950977904'
     },
     {
       icon: <Mail className="w-5 h-5 text-amber-500" />,

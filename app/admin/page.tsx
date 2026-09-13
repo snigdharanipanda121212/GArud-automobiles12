@@ -13,21 +13,18 @@ import {
   Review,
   getReviews,
   saveReview,
-  deleteReview
+  deleteReview,
+  VehicleColor
 } from '@/lib/store';
 import { 
   Lock, 
-  TrendingUp, 
   Mail, 
   Phone, 
   Trash2, 
   Plus, 
-  CheckCircle, 
-  Clock, 
   AlertCircle, 
   Archive, 
   Sliders, 
-  Landmark, 
   Sparkles,
   BookOpenCheck,
   Star,
@@ -37,69 +34,96 @@ import {
   Upload,
   FolderOpen,
   Image as ImageIcon,
-  X
+  X,
+  Pencil,
+  Palette
 } from 'lucide-react';
+
+const AVAILABLE_COLORS: VehicleColor[] = [
+  { name: 'Royal Blue', hex: '#1D4ED8' },
+  { name: 'Emerald Green', hex: '#059669' },
+  { name: 'Golden Yellow', hex: '#EAB308' },
+  { name: 'Signal Red', hex: '#DC2626' },
+  { name: 'Sunset Orange', hex: '#EA580C' },
+  { name: 'Sky Blue', hex: '#0284C7' },
+  { name: 'Cyan Ocean', hex: '#06B6D4' },
+  { name: 'Pastel Pink', hex: '#EC4899' },
+  { name: 'Glossy Black', hex: '#18181B' },
+  { name: 'Snow White', hex: '#F8FAFC' },
+];
 
 const VEHICLE_IMAGE_LIBRARY = [
   {
-    name: 'Standard Cargo Loader (Ocean Blue)',
+    name: 'Garud Royal Blue Cargo Loader 750 (Heavy Duty)',
     category: 'E-Loader',
-    url: 'https://images.unsplash.com/photo-1558441719-ff34b0524a24?w=600&auto=format&fit=crop&q=80',
+    color: 'Royal Blue',
+    url: '/vehicles/cargo_loader_blue.jpg',
   },
   {
-    name: 'Robust Industrial Hauler (Red/Black)',
+    name: 'Industrial Heavy Duty Hauler (Signal Red)',
     category: 'E-Loader',
-    url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&auto=format&fit=crop&q=80',
+    color: 'Signal Red',
+    url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Modern Garud Cargo Loader Core',
+    name: 'Commercial Heavy Loader (Vibrant Yellow)',
     category: 'E-Loader',
-    url: 'https://picsum.photos/seed/eloader/600/400',
+    color: 'Golden Yellow',
+    url: 'https://images.unsplash.com/photo-1558441719-ff34b0524a24?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Classic Yellow Cab E-Rickshaw',
+    name: 'Garud Passenger E-Rickshaw (Emerald Green & Gold)',
     category: 'E-Rickshaw',
-    url: 'https://picsum.photos/seed/erickshaw/600/400',
+    color: 'Emerald Green',
+    url: '/vehicles/erickshaw_passenger.jpg',
   },
   {
-    name: 'Smart Urban Passenger Trike',
+    name: 'Classic Yellow Cab E-Rickshaw Passenger Toto',
     category: 'E-Rickshaw',
-    url: 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?w=600&auto=format&fit=crop&q=80',
+    color: 'Golden Yellow',
+    url: 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Deluxe Multi-Passenger E-Rickshaw',
+    name: 'Urban Electric Trike (Electric Blue)',
     category: 'E-Rickshaw',
-    url: 'https://picsum.photos/seed/evsco/600/400',
+    color: 'Sky Blue',
+    url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Garud Mobile Food Van Core',
+    name: 'Garud Mobile Food Van (Flame Red & Yellow)',
     category: 'Food Van',
-    url: 'https://picsum.photos/seed/foodvan/600/400',
+    color: 'Flame Red',
+    url: '/vehicles/ev_food_van.jpg',
   },
   {
-    name: 'Stainless Steel Snack Stall Mobile',
+    name: 'Mobile Street Delights Snack Van (Bright Yellow)',
     category: 'Food Van',
-    url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&auto=format&fit=crop&q=80',
+    color: 'Sunflower Yellow',
+    url: 'https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Garud Polar Freezer Unit',
+    name: 'Garud Polar Ice-Cream Dispenser (Cyan & Pastel Pink)',
     category: 'Ice Cream Van',
-    url: 'https://picsum.photos/seed/icecream/600/400',
+    color: 'Cyan Ocean',
+    url: '/vehicles/ev_icecream_van.jpg',
   },
   {
-    name: 'Streetside Mobile Parlor Dispenser',
+    name: 'Mobile Gelato Parlor Cart (Pastel Blue)',
     category: 'Ice Cream Van',
-    url: 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=600&auto=format&fit=crop&q=80',
+    color: 'Pastel Blue',
+    url: 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=800&auto=format&fit=crop&q=80',
   },
   {
-    name: 'Garud Smart Lithium Cell Pack',
+    name: 'Garud 60V Smart Lithium Battery Unit (Cyan BMS Display)',
     category: 'Battery',
-    url: 'https://picsum.photos/seed/battery/600/400',
+    color: 'Electric Blue',
+    url: '/vehicles/ev_lithium_pack.jpg',
   },
   {
-    name: 'Active Pack BMS Lithium Unit',
+    name: 'High Capacity Active Lithium Cell Pack',
     category: 'Battery',
-    url: 'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?w=600&auto=format&fit=crop&q=80',
+    color: 'Titanium Grey',
+    url: 'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?w=800&auto=format&fit=crop&q=80',
   },
 ];
 
@@ -134,6 +158,9 @@ export default function AdminHubPage() {
 
   // Form states - Add Vehicle
   const [isAddingVehicle, setIsAddingVehicle] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+  const [imageTarget, setImageTarget] = useState<'new' | 'edit'>('new');
+
   const [newVehicle, setNewVehicle] = useState<Omit<Vehicle, 'id' | 'featured'>>({
     name: '',
     category: 'E-Loader',
@@ -143,10 +170,14 @@ export default function AdminHubPage() {
     chargingTime: '4 Hours',
     capacity: '750 kg',
     warranty: '3 Years Cells',
-    imageUrl: 'https://picsum.photos/seed/evsco/600/400',
+    imageUrl: '/vehicles/cargo_loader_blue.jpg',
     status: 'In Stock',
     features: ['LED Projection Lamp', 'Regenerative Braking'],
-    motorType: '1200W Waterproof Brushless DC Motor'
+    motorType: '1200W Waterproof Brushless DC Motor',
+    colors: [
+      { name: 'Royal Blue', hex: '#1D4ED8' },
+      { name: 'Sunset Orange', hex: '#EA580C' }
+    ]
   });
 
   // Image Library state managers
@@ -156,6 +187,13 @@ export default function AdminHubPage() {
   
   // Active editing notes state
   const [editingNotes, setEditingNotes] = useState<{ [id: string]: string }>({});
+
+  // Custom Color Add Bar state
+  const [customColorNameNew, setCustomColorNameNew] = useState('');
+  const [customColorHexNew, setCustomColorHexNew] = useState('#1D4ED8');
+
+  const [customColorNameEdit, setCustomColorNameEdit] = useState('');
+  const [customColorHexEdit, setCustomColorHexEdit] = useState('#1D4ED8');
 
   useEffect(() => {
     setIsMounted(true);
@@ -235,7 +273,7 @@ export default function AdminHubPage() {
       } else {
         setLoginError(data.error || 'Invalid dealership username or password coordinates. Make sure there are no typos.');
       }
-    } catch (err) {
+    } catch {
       setLoginError('Authentication service is currently offline. Please try again.');
     } finally {
       setIsLoggingIn(false);
@@ -300,20 +338,118 @@ export default function AdminHubPage() {
     setNewVehicle({
       name: '',
       category: 'E-Loader',
-      price: '₹1,45,005',
+      price: '₹1,45,000',
       range: '90-100 km',
       batteryType: '60V Lithium Cells',
       chargingTime: '4 Hours',
       capacity: '750 kg',
       warranty: '3 Years Cells',
-      imageUrl: 'https://picsum.photos/seed/evsco/600/400',
+      imageUrl: '/vehicles/cargo_loader_blue.jpg',
       status: 'In Stock',
       features: ['LED Projection Lamp', 'Regenerative Braking'],
-      motorType: '1200W Waterproof Brushless DC Motor'
+      motorType: '1200W Waterproof Brushless DC Motor',
+      colors: [
+        { name: 'Royal Blue', hex: '#1D4ED8' },
+        { name: 'Sunset Orange', hex: '#EA580C' }
+      ]
     });
   };
 
-  const handleLocalImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditVehicleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVehicle) return;
+    const updated = saveVehicle(editingVehicle);
+    setVehicles(updated);
+    setEditingVehicle(null);
+  };
+
+  const handleAddCustomColorNew = () => {
+    const trimmed = customColorNameNew.trim();
+    if (!trimmed) return;
+    const current = newVehicle.colors || [];
+    const existsIndex = current.findIndex(c => c.name.toLowerCase() === trimmed.toLowerCase());
+    if (existsIndex >= 0) {
+      setNewVehicle(prev => ({
+        ...prev,
+        colors: (prev.colors || []).map((c, i) => i === existsIndex ? { ...c, hex: customColorHexNew } : c)
+      }));
+    } else {
+      setNewVehicle(prev => ({
+        ...prev,
+        colors: [...(prev.colors || []), { name: trimmed, hex: customColorHexNew }]
+      }));
+    }
+    setCustomColorNameNew('');
+  };
+
+  const handleRemoveNewVehicleColor = (colorName: string) => {
+    setNewVehicle(prev => ({
+      ...prev,
+      colors: (prev.colors || []).filter(c => c.name !== colorName)
+    }));
+  };
+
+  const handleAddCustomColorEdit = () => {
+    const trimmed = customColorNameEdit.trim();
+    if (!trimmed || !editingVehicle) return;
+    const current = editingVehicle.colors || [];
+    const existsIndex = current.findIndex(c => c.name.toLowerCase() === trimmed.toLowerCase());
+    if (existsIndex >= 0) {
+      setEditingVehicle(prev => prev ? ({
+        ...prev,
+        colors: (prev.colors || []).map((c, i) => i === existsIndex ? { ...c, hex: customColorHexEdit } : c)
+      }) : null);
+    } else {
+      setEditingVehicle(prev => prev ? ({
+        ...prev,
+        colors: [...(prev.colors || []), { name: trimmed, hex: customColorHexEdit }]
+      }) : null);
+    }
+    setCustomColorNameEdit('');
+  };
+
+  const handleRemoveEditingVehicleColor = (colorName: string) => {
+    if (!editingVehicle) return;
+    setEditingVehicle(prev => prev ? ({
+      ...prev,
+      colors: (prev.colors || []).filter(c => c.name !== colorName)
+    }) : null);
+  };
+
+  const toggleNewVehicleColor = (col: VehicleColor) => {
+    const current = newVehicle.colors || [];
+    const exists = current.some(c => c.name === col.name);
+    if (exists) {
+      setNewVehicle(prev => ({
+        ...prev,
+        colors: current.filter(c => c.name !== col.name)
+      }));
+    } else {
+      setNewVehicle(prev => ({
+        ...prev,
+        colors: [...current, col]
+      }));
+    }
+  };
+
+  const toggleEditingVehicleColor = (col: VehicleColor) => {
+    if (!editingVehicle) return;
+    const current = editingVehicle.colors || [];
+    const exists = current.some(c => c.name === col.name);
+    if (exists) {
+      setEditingVehicle(prev => prev ? ({
+        ...prev,
+        colors: current.filter(c => c.name !== col.name)
+      }) : null);
+    } else {
+      setEditingVehicle(prev => prev ? ({
+        ...prev,
+        colors: [...current, col]
+      }) : null);
+    }
+  };
+
+  const handleLocalImageUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'new' | 'edit' = 'new') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -330,10 +466,18 @@ export default function AdminHubPage() {
           clearInterval(interval);
           const reader = new FileReader();
           reader.onloadend = () => {
-             setNewVehicle(prevVeh => ({
-               ...prevVeh,
-               imageUrl: reader.result as string
-             }));
+             const result = reader.result as string;
+             if (target === 'new') {
+               setNewVehicle(prevVeh => ({
+                 ...prevVeh,
+                 imageUrl: result
+               }));
+             } else {
+               setEditingVehicle(prevVeh => prevVeh ? ({
+                 ...prevVeh,
+                 imageUrl: result
+               }) : null);
+             }
              setUploadProgress(null);
           };
           reader.readAsDataURL(file);
@@ -341,7 +485,7 @@ export default function AdminHubPage() {
         }
         return prev + 30;
       });
-    }, 150);
+    }, 120);
   };
 
   const handleDeleteVehicle = (id: string) => {
@@ -354,7 +498,6 @@ export default function AdminHubPage() {
   // Calculations for dashboard
   const totalLeads = enquiries.length;
   const newLeads = enquiries.filter(e => e.status === 'New').length;
-  const closedLeads = enquiries.filter(e => e.status === 'Closed').length;
 
   if (!isLoggedIn) {
     return (
@@ -762,6 +905,148 @@ export default function AdminHubPage() {
                     />
                   </div>
 
+                  {/* Color Customization Palette with Custom Add Bar */}
+                  <div className="col-span-1 md:col-span-3 bg-zinc-900/25 border border-zinc-900 p-4 sm:p-5 rounded-2xl space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="text-zinc-200 text-xs font-bold uppercase font-mono tracking-wider flex items-center gap-1.5">
+                          <Palette className="w-4 h-4 text-amber-500" />
+                          Vehicle Colorways & Named Options
+                        </label>
+                        <p className="text-[11px] text-zinc-500 mt-0.5">
+                          Configure customer-selectable colors for this model. You can type any custom name using the Add Bar below.
+                        </p>
+                      </div>
+                      <span className="text-[10px] text-amber-400 bg-amber-950/40 border border-amber-900/60 px-2 py-0.5 rounded font-mono">
+                        {(newVehicle.colors || []).length} active
+                      </span>
+                    </div>
+
+                    {/* Active assigned colors chips */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] uppercase font-mono text-zinc-400 font-semibold tracking-wider block">
+                        Assigned Colors for this Model:
+                      </span>
+                      <div className="flex flex-wrap items-center gap-2 min-h-[38px] p-2.5 bg-zinc-950/90 rounded-xl border border-zinc-850">
+                        {(!newVehicle.colors || newVehicle.colors.length === 0) ? (
+                          <span className="text-xs text-zinc-500 italic px-1">
+                            No colors assigned yet. Use the Color Add Bar below to name and add colorways.
+                          </span>
+                        ) : (
+                          newVehicle.colors.map((col, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-white text-xs px-3 py-1.5 rounded-xl group hover:border-amber-500/60 transition shadow-sm"
+                            >
+                              <span
+                                className="w-3.5 h-3.5 rounded-full border border-black/50 shrink-0 shadow"
+                                style={{ backgroundColor: col.hex }}
+                              />
+                              <span className="font-semibold text-zinc-200">{col.name}</span>
+                              <span className="text-[10px] text-zinc-500 font-mono">({col.hex})</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveNewVehicleColor(col.name)}
+                                className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800 p-1 rounded-md transition cursor-pointer ml-1"
+                                title={`Remove ${col.name}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* DEDICATED ADD BAR TO NAME AND PICK CUSTOM COLOR */}
+                    <div className="space-y-2 pt-1 border-t border-zinc-900">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
+                          <Plus className="w-3.5 h-3.5" />
+                          Color Add Bar — Type Name & Pick Shade
+                        </label>
+                        <span className="text-[10px] text-zinc-500 font-mono">Press Enter or click Add Color</span>
+                      </div>
+
+                      <div className="bg-zinc-950 border-2 border-amber-500/40 focus-within:border-amber-500 p-2 sm:p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-2.5 transition shadow-lg">
+                        {/* Native Color Picker swatch + HEX code */}
+                        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-800">
+                          <input
+                            type="color"
+                            value={customColorHexNew}
+                            onChange={(e) => setCustomColorHexNew(e.target.value)}
+                            className="w-7 h-7 rounded-lg cursor-pointer border border-zinc-700 bg-transparent p-0"
+                            title="Click to choose custom shade"
+                          />
+                          <span className="text-xs font-mono text-zinc-300 font-bold uppercase tracking-wide">
+                            {customColorHexNew}
+                          </span>
+                        </div>
+
+                        {/* Name Input field */}
+                        <input
+                          type="text"
+                          value={customColorNameNew}
+                          onChange={(e) => setCustomColorNameNew(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddCustomColorNew();
+                            }
+                          }}
+                          placeholder="Type custom color name (e.g. Matte Jet Black, Sea Green, Metallic Cyan)..."
+                          className="flex-1 w-full bg-zinc-900/90 border border-zinc-800 focus:border-amber-500 text-white text-xs px-4 py-2.5 rounded-xl focus:outline-none placeholder:text-zinc-500"
+                        />
+
+                        {/* Add Button */}
+                        <button
+                          type="button"
+                          onClick={handleAddCustomColorNew}
+                          disabled={!customColorNameNew.trim()}
+                          className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow active:scale-95 font-mono"
+                        >
+                          <Plus className="w-4 h-4 stroke-[3]" />
+                          <span>Add Color</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Quick presets row */}
+                    <div className="pt-1">
+                      <span className="text-[10px] text-zinc-500 font-mono block mb-1.5">
+                        Quick Preset Swatches (click to fill name & shade):
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {AVAILABLE_COLORS.map((col) => {
+                          const isSelected = (newVehicle.colors || []).some(c => c.name.toLowerCase() === col.name.toLowerCase());
+                          return (
+                            <button
+                              key={col.name}
+                              type="button"
+                              onClick={() => {
+                                setCustomColorNameNew(col.name);
+                                setCustomColorHexNew(col.hex);
+                                toggleNewVehicleColor(col);
+                              }}
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs transition cursor-pointer ${
+                                isSelected
+                                  ? 'bg-zinc-800 border-amber-500 text-amber-300 shadow-sm'
+                                  : 'bg-zinc-950 border-zinc-850 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                              }`}
+                              title={`Click to toggle or prefill ${col.name}`}
+                            >
+                              <span 
+                                className="w-2.5 h-2.5 rounded-full border border-black/40 shrink-0" 
+                                style={{ backgroundColor: col.hex }} 
+                              />
+                              <span>{col.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="col-span-1 md:col-span-3 bg-zinc-900/10 border border-zinc-900/40 p-4 rounded-2xl flex flex-col md:flex-row gap-5">
                     {/* Visual thumbnail preview */}
                     <div className="w-full md:w-40 h-28 relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950/80 flex flex-col items-center justify-center group shrink-0">
@@ -773,7 +1058,7 @@ export default function AdminHubPage() {
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="text-[10px] text-zinc-400 font-mono">Active Link</span>
+                            <span className="text-[10px] text-zinc-400 font-mono">Full Color</span>
                           </div>
                         </>
                       ) : (
@@ -793,24 +1078,24 @@ export default function AdminHubPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              const currentCat = newVehicle.category;
-                              setSelectedLibraryCategory(currentCat);
+                              setImageTarget('new');
+                              setSelectedLibraryCategory(newVehicle.category);
                               setShowImageLibrary(true);
                             }}
                             className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-amber-500 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition active:scale-95"
                           >
                             <FolderOpen className="w-3.5 h-3.5" />
-                            Browse Library Presets
+                            Browse Colorful Presets
                           </button>
 
                           {/* Upload Local File Button */}
                           <label className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition active:scale-95">
                             <Upload className="w-3.5 h-3.5" />
-                            Upload Local Photo
+                            Load Colorful Image File
                             <input
                               type="file"
                               accept="image/*"
-                              onChange={handleLocalImageUpload}
+                              onChange={(e) => handleLocalImageUpload(e, 'new')}
                               className="hidden"
                             />
                           </label>
@@ -827,7 +1112,7 @@ export default function AdminHubPage() {
                           placeholder="Or paste direct image URL links here..."
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-zinc-500 font-mono">
-                          URL LINK
+                          IMAGE URL
                         </div>
                       </div>
 
@@ -877,21 +1162,48 @@ export default function AdminHubPage() {
                   <table className="w-full text-left border-collapse text-sm text-zinc-400">
                     <thead className="bg-zinc-900/60 text-zinc-500 text-[10px] uppercase font-mono tracking-wider border-b border-zinc-900">
                       <tr>
+                        <th className="p-4 sm:p-5 font-bold">Photo</th>
                         <th className="p-4 sm:p-5 font-bold">Model Plate</th>
-                        <th className="p-4 sm:p-5 font-bold">Category</th>
+                        <th className="p-4 sm:p-5 font-bold">Category & Colors</th>
                         <th className="p-4 sm:p-5 font-bold">Price</th>
                         <th className="p-4 sm:p-5 font-bold">Drive specs</th>
-                        <th className="p-4 sm:p-5 font-bold text-right">Delete</th>
+                        <th className="p-4 sm:p-5 font-bold text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-900 font-sans">
                       {vehicles.map((v) => (
                         <tr key={v.id} className="hover:bg-zinc-900/30 transition">
-                          <td className="p-4 sm:p-5 font-bold text-white">{v.name}</td>
                           <td className="p-4 sm:p-5">
-                            <span className="bg-zinc-900 border border-zinc-800 text-[9px] text-zinc-500 font-mono font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            <div className="w-16 h-11 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative shadow-sm">
+                              <img
+                                src={v.imageUrl}
+                                alt={v.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </td>
+                          <td className="p-4 sm:p-5 font-bold text-white">
+                            <div>{v.name}</div>
+                            <span className="text-[10px] text-zinc-500 font-mono font-normal">ID: {v.id}</span>
+                          </td>
+                          <td className="p-4 sm:p-5 space-y-1.5">
+                            <span className="bg-zinc-900 border border-zinc-800 text-[9px] text-amber-400 font-mono font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider inline-block">
                               {v.category}
                             </span>
+                            {/* Color swatches preview */}
+                            {v.colors && v.colors.length > 0 && (
+                              <div className="flex items-center gap-1 flex-wrap pt-0.5">
+                                {v.colors.map((c, i) => (
+                                  <span
+                                    key={i}
+                                    title={c.name}
+                                    className="w-2.5 h-2.5 rounded-full border border-black/50 shrink-0"
+                                    style={{ backgroundColor: c.hex }}
+                                  />
+                                ))}
+                                <span className="text-[9px] text-zinc-500 font-mono">{v.colors.length} colors</span>
+                              </div>
+                            )}
                           </td>
                           <td className="p-4 sm:p-5 font-mono text-amber-500 font-bold">{v.price}</td>
                           <td className="p-4 sm:p-5 text-xs text-zinc-500">
@@ -899,10 +1211,21 @@ export default function AdminHubPage() {
                             <div className="line-clamp-1">Battery: {v.batteryType}</div>
                             <div className="line-clamp-1 text-amber-500/80 font-mono text-[10px]">Motor: {v.motorType || '1200W Heavy Duty BLDC'}</div>
                           </td>
-                          <td className="p-4 sm:p-5 text-right">
+                          <td className="p-4 sm:p-5 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => {
+                                setEditingVehicle({ ...v });
+                              }}
+                              className="text-amber-400 hover:text-amber-300 hover:bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition cursor-pointer px-2.5 py-1.5 rounded-lg text-xs font-semibold mr-2 inline-flex items-center gap-1"
+                              title="Edit specifications and colorful image"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>Edit & Image</span>
+                            </button>
                             <button
                               onClick={() => handleDeleteVehicle(v.id)}
                               className="text-zinc-600 hover:text-red-500 transition cursor-pointer p-1.5 inline-block"
+                              title="Delete model"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1121,6 +1444,333 @@ export default function AdminHubPage() {
 
       </div>
 
+      {/* Edit Vehicle Modal */}
+      {editingVehicle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-300">
+          <div className="w-full max-w-3xl bg-zinc-950 border border-zinc-850 rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => setEditingVehicle(null)}
+              className="absolute right-6 top-6 text-zinc-500 hover:text-white transition cursor-pointer p-1.5 hover:bg-zinc-900 rounded-full flex items-center justify-center"
+              title="Close Panel"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="border-b border-zinc-900 pb-4 mb-6">
+              <span className="text-amber-500 text-xs font-mono font-bold uppercase tracking-wider">Vehicle Management</span>
+              <h3 className="text-xl font-extrabold text-white">Edit Model & Colorful Image</h3>
+              <p className="text-xs text-zinc-400 mt-1">
+                Update details, load vivid colorful vehicle photos, or customize available body colors for {editingVehicle.name}.
+              </p>
+            </div>
+
+            <form onSubmit={handleEditVehicleSubmit} className="space-y-6">
+              {/* Image Loading Box */}
+              <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-2xl flex flex-col md:flex-row gap-5 items-start">
+                <div className="w-full md:w-48 aspect-video rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 relative shrink-0 shadow-md">
+                  <img
+                    src={editingVehicle.imageUrl}
+                    alt={editingVehicle.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[9px] font-mono text-zinc-300">
+                    Live Photo
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-3 w-full">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <label className="text-zinc-300 text-xs font-bold font-mono uppercase tracking-wider">
+                      Vehicle Photo Link
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageTarget('edit');
+                          setSelectedLibraryCategory(editingVehicle.category);
+                          setShowImageLibrary(true);
+                        }}
+                        className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition"
+                      >
+                        <FolderOpen className="w-3.5 h-3.5" />
+                        Choose Preset
+                      </button>
+
+                      <label className="bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition">
+                        <Upload className="w-3.5 h-3.5" />
+                        Load Colorful Image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleLocalImageUpload(e, 'edit')}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.imageUrl}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, imageUrl: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-amber-500 font-mono"
+                    placeholder="Enter image URL..."
+                  />
+
+                  {uploadProgress !== null && (
+                    <div className="space-y-1 animate-pulse">
+                      <div className="flex justify-between text-[10px] font-mono text-amber-500">
+                        <span>Uploading colorful media...</span>
+                        <span>{uploadProgress}%</span>
+                      </div>
+                      <div className="w-full h-1 bg-zinc-900 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-amber-500 transition-all duration-150" 
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Color Customization Palette with Custom Add Bar */}
+              <div className="bg-zinc-900/25 border border-zinc-900 p-4 sm:p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-zinc-200 text-xs font-bold uppercase font-mono tracking-wider flex items-center gap-1.5">
+                      <Palette className="w-4 h-4 text-amber-500" />
+                      Vehicle Colorways & Named Options
+                    </label>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                      Configure customer-selectable colors for this model. You can type any custom name using the Add Bar below.
+                    </p>
+                  </div>
+                  <span className="text-[10px] text-amber-400 bg-amber-950/40 border border-amber-900/60 px-2 py-0.5 rounded font-mono">
+                    {(editingVehicle.colors || []).length} active
+                  </span>
+                </div>
+
+                {/* Active assigned colors chips */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] uppercase font-mono text-zinc-400 font-semibold tracking-wider block">
+                    Assigned Colors for this Model:
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2 min-h-[38px] p-2.5 bg-zinc-950/90 rounded-xl border border-zinc-850">
+                    {(!editingVehicle.colors || editingVehicle.colors.length === 0) ? (
+                      <span className="text-xs text-zinc-500 italic px-1">
+                        No colors assigned yet. Use the Color Add Bar below to name and add colorways.
+                      </span>
+                    ) : (
+                      editingVehicle.colors.map((col, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-white text-xs px-3 py-1.5 rounded-xl group hover:border-amber-500/60 transition shadow-sm"
+                        >
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-black/50 shrink-0 shadow"
+                            style={{ backgroundColor: col.hex }}
+                          />
+                          <span className="font-semibold text-zinc-200">{col.name}</span>
+                          <span className="text-[10px] text-zinc-500 font-mono">({col.hex})</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveEditingVehicleColor(col.name)}
+                            className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800 p-1 rounded-md transition cursor-pointer ml-1"
+                            title={`Remove ${col.name}`}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* DEDICATED ADD BAR TO NAME AND PICK CUSTOM COLOR */}
+                <div className="space-y-2 pt-1 border-t border-zinc-900">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
+                      <Plus className="w-3.5 h-3.5" />
+                      Color Add Bar — Type Name & Pick Shade
+                    </label>
+                    <span className="text-[10px] text-zinc-500 font-mono">Press Enter or click Add Color</span>
+                  </div>
+
+                  <div className="bg-zinc-950 border-2 border-amber-500/40 focus-within:border-amber-500 p-2 sm:p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-2.5 transition shadow-lg">
+                    {/* Native Color Picker swatch + HEX code */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-800">
+                      <input
+                        type="color"
+                        value={customColorHexEdit}
+                        onChange={(e) => setCustomColorHexEdit(e.target.value)}
+                        className="w-7 h-7 rounded-lg cursor-pointer border border-zinc-700 bg-transparent p-0"
+                        title="Click to choose custom shade"
+                      />
+                      <span className="text-xs font-mono text-zinc-300 font-bold uppercase tracking-wide">
+                        {customColorHexEdit}
+                      </span>
+                    </div>
+
+                    {/* Name Input field */}
+                    <input
+                      type="text"
+                      value={customColorNameEdit}
+                      onChange={(e) => setCustomColorNameEdit(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddCustomColorEdit();
+                        }
+                      }}
+                      placeholder="Type custom color name (e.g. Matte Jet Black, Sea Green, Metallic Cyan)..."
+                      className="flex-1 w-full bg-zinc-900/90 border border-zinc-800 focus:border-amber-500 text-white text-xs px-4 py-2.5 rounded-xl focus:outline-none placeholder:text-zinc-500"
+                    />
+
+                    {/* Add Button */}
+                    <button
+                      type="button"
+                      onClick={handleAddCustomColorEdit}
+                      disabled={!customColorNameEdit.trim()}
+                      className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow active:scale-95 font-mono"
+                    >
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                      <span>Add Color</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick presets row */}
+                <div className="pt-1">
+                  <span className="text-[10px] text-zinc-500 font-mono block mb-1.5">
+                    Quick Preset Swatches (click to fill name & shade):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {AVAILABLE_COLORS.map((col) => {
+                      const isSelected = (editingVehicle.colors || []).some(c => c.name.toLowerCase() === col.name.toLowerCase());
+                      return (
+                        <button
+                          key={col.name}
+                          type="button"
+                          onClick={() => {
+                            setCustomColorNameEdit(col.name);
+                            setCustomColorHexEdit(col.hex);
+                            toggleEditingVehicleColor(col);
+                          }}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs transition cursor-pointer ${
+                            isSelected
+                              ? 'bg-zinc-800 border-amber-500 text-amber-300 shadow-sm'
+                              : 'bg-zinc-950 border-zinc-850 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                          }`}
+                          title={`Click to toggle or prefill ${col.name}`}
+                        >
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full border border-black/40 shrink-0" 
+                            style={{ backgroundColor: col.hex }} 
+                          />
+                          <span>{col.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Specs Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Model Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.name}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, name: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Price</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.price}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, price: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Drive Range</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.range}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, range: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Battery Type</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.batteryType}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, batteryType: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Motor Drive</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingVehicle.motorType}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, motorType: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 text-xs font-semibold mb-1">Stock Status</label>
+                  <select
+                    value={editingVehicle.status}
+                    onChange={(e) => setEditingVehicle({ ...editingVehicle, status: e.target.value as Vehicle['status'] })}
+                    className="w-full bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                  >
+                    <option value="In Stock">In Stock</option>
+                    <option value="Available">Available</option>
+                    <option value="Special Order">Special Order</option>
+                    <option value="Out of Stock">Out of Stock</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-zinc-900 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingVehicle(null)}
+                  className="bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-zinc-800 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer font-mono"
+                >
+                  Save Vehicle & Images
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Image Library Selector Modal */}
       {showImageLibrary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-300">
@@ -1165,41 +1815,50 @@ export default function AdminHubPage() {
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-h-[50vh] overflow-y-auto pr-2">
               {VEHICLE_IMAGE_LIBRARY
                 .filter((item) => selectedLibraryCategory === 'All' || item.category === selectedLibraryCategory)
-                .map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setNewVehicle(prev => ({ ...prev, imageUrl: item.url }));
-                      setShowImageLibrary(false);
-                    }}
-                    className={`group flex flex-col text-left border rounded-2xl overflow-hidden hover:border-amber-500/80 active:scale-[0.98] transition duration-200 bg-zinc-900/10 ${
-                      newVehicle.imageUrl === item.url 
-                        ? 'border-amber-500 ring-2 ring-amber-500/20' 
-                        : 'border-zinc-900'
-                    }`}
-                  >
-                    <div className="relative aspect-video w-full overflow-hidden bg-zinc-950">
-                      <img
-                        src={item.url}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      <div className="absolute top-2 left-2 bg-zinc-950/80 backdrop-blur-sm border border-zinc-900 text-[8px] font-mono uppercase text-amber-500 px-1.5 py-0.5 rounded">
-                        {item.category}
+                .map((item, idx) => {
+                  const isCurrent = imageTarget === 'new' 
+                    ? newVehicle.imageUrl === item.url 
+                    : editingVehicle?.imageUrl === item.url;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        if (imageTarget === 'new') {
+                          setNewVehicle(prev => ({ ...prev, imageUrl: item.url }));
+                        } else {
+                          setEditingVehicle(prev => prev ? ({ ...prev, imageUrl: item.url }) : null);
+                        }
+                        setShowImageLibrary(false);
+                      }}
+                      className={`group flex flex-col text-left border rounded-2xl overflow-hidden hover:border-amber-500/80 active:scale-[0.98] transition duration-200 bg-zinc-900/10 ${
+                        isCurrent
+                          ? 'border-amber-500 ring-2 ring-amber-500/20' 
+                          : 'border-zinc-900'
+                      }`}
+                    >
+                      <div className="relative aspect-video w-full overflow-hidden bg-zinc-950">
+                        <img
+                          src={item.url}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        <div className="absolute top-2 left-2 bg-zinc-950/80 backdrop-blur-sm border border-zinc-900 text-[8px] font-mono uppercase text-amber-500 px-1.5 py-0.5 rounded">
+                          {item.category}
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-3 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                      <h5 className="text-[11px] font-bold text-white line-clamp-1 group-hover:text-amber-400 transition">
-                        {item.name}
-                      </h5>
-                      <span className="text-[9px] text-zinc-550 mt-1.5 font-mono line-clamp-1 truncate block">
-                        {item.url}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                      <div className="p-3 bg-zinc-900/30 flex-1 flex flex-col justify-between">
+                        <h5 className="text-[11px] font-bold text-white line-clamp-1 group-hover:text-amber-400 transition">
+                          {item.name}
+                        </h5>
+                        <span className="text-[9px] text-zinc-550 mt-1.5 font-mono line-clamp-1 truncate block">
+                          {item.url}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
             </div>
             
             <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-end">

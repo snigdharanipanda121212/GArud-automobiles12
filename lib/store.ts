@@ -1,3 +1,8 @@
+export interface VehicleColor {
+  name: string;
+  hex: string;
+}
+
 export interface Vehicle {
   id: string;
   name: string;
@@ -13,6 +18,7 @@ export interface Vehicle {
   status: 'In Stock' | 'Available' | 'Special Order' | 'Out of Stock';
   features: string[];
   motorType: string;
+  colors?: VehicleColor[];
 }
 
 export interface Enquiry {
@@ -30,7 +36,7 @@ export interface Enquiry {
   adminNotes?: string;
 }
 
-const SEED_VEHICLES: Vehicle[] = [
+export const SEED_VEHICLES: Vehicle[] = [
   {
     id: 'ev-2',
     name: 'Garud Cargo Loader 750',
@@ -41,11 +47,17 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '7-8 Hours Standard Charge',
     capacity: '750 kg Payload Limit',
     warranty: '1 Year Full Pack Warranty',
-    imageUrl: 'https://picsum.photos/seed/eloader/600/400',
+    imageUrl: '/vehicles/cargo_loader_blue.jpg',
     featured: true,
     status: 'In Stock',
     features: ['Reinforced Dual Suspensions', 'High-Torque Climbing Gear', 'Heavy Duty Sheet Metal Bed', 'Odisha RTO Load Certification'],
-    motorType: '1000W High-Torque Brushless DC Motor'
+    motorType: '1000W High-Torque Brushless DC Motor',
+    colors: [
+      { name: 'Royal Blue', hex: '#1D4ED8' },
+      { name: 'Sunset Orange', hex: '#EA580C' },
+      { name: 'Signal Red', hex: '#DC2626' },
+      { name: 'Glossy Black', hex: '#18181B' }
+    ]
   },
   {
     id: 'ev-3',
@@ -57,11 +69,17 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4 Hours Smart Charging',
     capacity: '5 Passengers + 1 Driver',
     warranty: '3 Years Mechanical & Electrical',
-    imageUrl: 'https://picsum.photos/seed/erickshaw/600/400',
+    imageUrl: '/vehicles/erickshaw_passenger.jpg',
     featured: true,
     status: 'Available',
     features: ['Waterproof Fabric Canopy', 'Dual Tone Soft Cushioned Seats', 'Smart Digital Cabin Cluster', 'Under-Seat Security Storage'],
-    motorType: '1200W Waterproof Brushless DC Motor'
+    motorType: '1200W Waterproof Brushless DC Motor',
+    colors: [
+      { name: 'Emerald Green', hex: '#059669' },
+      { name: 'Golden Yellow', hex: '#EAB308' },
+      { name: 'Sky Blue', hex: '#0284C7' },
+      { name: 'Ruby Red', hex: '#E11D48' }
+    ]
   },
   {
     id: 'ev-4',
@@ -73,11 +91,16 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Fast Charge',
     capacity: '500 kg Flatbed Load',
     warranty: '2 Years Power Train',
-    imageUrl: 'https://picsum.photos/seed/foodvan/600/400',
+    imageUrl: '/vehicles/ev_food_van.jpg',
     featured: false,
     status: 'Special Order',
     features: ['Built-in 220V Inverter Port', 'Stainless Steel Dual Sinks', 'Extended Drop-down Shelf Tops', 'Full Overhead Dust Shields'],
-    motorType: '1200W BLDC Geared Drive Motor'
+    motorType: '1200W BLDC Geared Drive Motor',
+    colors: [
+      { name: 'Flame Red', hex: '#EF4444' },
+      { name: 'Sunflower Yellow', hex: '#F59E0B' },
+      { name: 'Silver Metallic', hex: '#94A3B8' }
+    ]
   },
   {
     id: 'ev-5',
@@ -89,11 +112,16 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4.5 Hours',
     capacity: '450 kg Freezer Weight',
     warranty: '2 Years Structural Chassis',
-    imageUrl: 'https://picsum.photos/seed/icecream/600/400',
+    imageUrl: '/vehicles/ev_icecream_van.jpg',
     featured: false,
     status: 'Special Order',
     features: ['Direct DC Smart Freezer System', 'Colorful Built-in Music Player', 'Dynamic Multi-Color LED strip', 'Lockable Canopy Panels'],
-    motorType: '1000W Direct-Drive BLDC Motor'
+    motorType: '1000W Direct-Drive BLDC Motor',
+    colors: [
+      { name: 'Cyan Ocean', hex: '#06B6D4' },
+      { name: 'Pastel Pink', hex: '#EC4899' },
+      { name: 'Polar White', hex: '#F8FAFC' }
+    ]
   },
   {
     id: 'ev-6',
@@ -105,11 +133,16 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Balanced',
     capacity: 'Standard E-Rickshaw Casing Fit',
     warranty: '3 Years Full Replacement Warranty',
-    imageUrl: 'https://picsum.photos/seed/battery/600/400',
+    imageUrl: '/vehicles/ev_lithium_pack.jpg',
     featured: false,
     status: 'In Stock',
     features: ['Integrated Smart BMS Board', 'Flame-Retardant Metal Shell', 'IP67 dust and water rating', 'High Precision Cell Balancing'],
-    motorType: 'N/A (Battery Pack Unit)'
+    motorType: 'N/A (Battery Pack Unit)',
+    colors: [
+      { name: 'Electric Blue', hex: '#2563EB' },
+      { name: 'Amber Glow', hex: '#F59E0B' },
+      { name: 'Titanium Grey', hex: '#475569' }
+    ]
   }
 ];
 
@@ -161,12 +194,20 @@ export function getVehicles(): Vehicle[] {
     // Backward compatibility merge: ensure motorType and other properties are standard
     return list.map((vehicle: any) => {
       const defaultMatch = SEED_VEHICLES.find(s => s.id === vehicle.id);
+      const isLegacyPlaceholder = !vehicle.imageUrl || vehicle.imageUrl.includes('picsum.photos');
       return {
         motorType: defaultMatch ? defaultMatch.motorType : '1200W High Torque Brushless DC Motor',
-        ...vehicle
+        colors: vehicle.colors || defaultMatch?.colors || [
+          { name: 'Royal Blue', hex: '#1D4ED8' },
+          { name: 'Emerald Green', hex: '#059669' },
+          { name: 'Golden Yellow', hex: '#EAB308' },
+          { name: 'Signal Red', hex: '#DC2626' }
+        ],
+        ...vehicle,
+        imageUrl: isLegacyPlaceholder && defaultMatch ? defaultMatch.imageUrl : vehicle.imageUrl
       };
     });
-  } catch (e) {
+  } catch {
     return SEED_VEHICLES;
   }
 }
@@ -204,7 +245,7 @@ export function getEnquiries(): Enquiry[] {
   }
   try {
     return JSON.parse(saved);
-  } catch (e) {
+  } catch {
     return SEED_ENQUIRIES;
   }
 }
@@ -310,7 +351,7 @@ export function getReviews(): Review[] {
   }
   try {
     return JSON.parse(saved);
-  } catch (e) {
+  } catch {
     return SEED_REVIEWS;
   }
 }
