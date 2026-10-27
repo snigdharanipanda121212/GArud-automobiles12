@@ -5,6 +5,7 @@ import { EnquiryProvider } from '@/hooks/use-enquiry';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import EnquiryModal from '@/components/EnquiryModal';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 const sansFont = Instrument_Sans({
   subsets: ['latin'],
@@ -41,6 +42,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <EnquiryModal />
+          <WhatsAppButton />
         </EnquiryProvider>
       </body>
     </html>
