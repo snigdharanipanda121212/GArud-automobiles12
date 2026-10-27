@@ -1,8 +1,3 @@
-export interface VehicleColor {
-  name: string;
-  hex: string;
-}
-
 export interface Vehicle {
   id: string;
   name: string;
@@ -18,7 +13,6 @@ export interface Vehicle {
   status: 'In Stock' | 'Available' | 'Special Order' | 'Out of Stock';
   features: string[];
   motorType: string;
-  colors?: VehicleColor[];
 }
 
 export interface Enquiry {
@@ -36,7 +30,7 @@ export interface Enquiry {
   adminNotes?: string;
 }
 
-export const SEED_VEHICLES: Vehicle[] = [
+const SEED_VEHICLES: Vehicle[] = [
   {
     id: 'ev-2',
     name: 'Garud Cargo Loader 750',
@@ -47,17 +41,11 @@ export const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '7-8 Hours Standard Charge',
     capacity: '750 kg Payload Limit',
     warranty: '1 Year Full Pack Warranty',
-    imageUrl: '/vehicles/cargo_loader_blue.jpg',
+    imageUrl: '/vehicles/loader.jpg',
     featured: true,
     status: 'In Stock',
     features: ['Reinforced Dual Suspensions', 'High-Torque Climbing Gear', 'Heavy Duty Sheet Metal Bed', 'Odisha RTO Load Certification'],
-    motorType: '1000W High-Torque Brushless DC Motor',
-    colors: [
-      { name: 'Royal Blue', hex: '#1D4ED8' },
-      { name: 'Sunset Orange', hex: '#EA580C' },
-      { name: 'Signal Red', hex: '#DC2626' },
-      { name: 'Glossy Black', hex: '#18181B' }
-    ]
+    motorType: '1000W High-Torque Brushless DC Motor'
   },
   {
     id: 'ev-3',
@@ -69,17 +57,11 @@ export const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4 Hours Smart Charging',
     capacity: '5 Passengers + 1 Driver',
     warranty: '3 Years Mechanical & Electrical',
-    imageUrl: '/vehicles/erickshaw_passenger.jpg',
+    imageUrl: '/vehicles/erickshaw.jpg',
     featured: true,
     status: 'Available',
     features: ['Waterproof Fabric Canopy', 'Dual Tone Soft Cushioned Seats', 'Smart Digital Cabin Cluster', 'Under-Seat Security Storage'],
-    motorType: '1200W Waterproof Brushless DC Motor',
-    colors: [
-      { name: 'Emerald Green', hex: '#059669' },
-      { name: 'Golden Yellow', hex: '#EAB308' },
-      { name: 'Sky Blue', hex: '#0284C7' },
-      { name: 'Ruby Red', hex: '#E11D48' }
-    ]
+    motorType: '1200W Waterproof Brushless DC Motor'
   },
   {
     id: 'ev-4',
@@ -91,16 +73,11 @@ export const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Fast Charge',
     capacity: '500 kg Flatbed Load',
     warranty: '2 Years Power Train',
-    imageUrl: '/vehicles/ev_food_van.jpg',
+    imageUrl: '/vehicles/foodvan.webp',
     featured: false,
     status: 'Special Order',
     features: ['Built-in 220V Inverter Port', 'Stainless Steel Dual Sinks', 'Extended Drop-down Shelf Tops', 'Full Overhead Dust Shields'],
-    motorType: '1200W BLDC Geared Drive Motor',
-    colors: [
-      { name: 'Flame Red', hex: '#EF4444' },
-      { name: 'Sunflower Yellow', hex: '#F59E0B' },
-      { name: 'Silver Metallic', hex: '#94A3B8' }
-    ]
+    motorType: '1200W BLDC Geared Drive Motor'
   },
   {
     id: 'ev-5',
@@ -112,16 +89,11 @@ export const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4.5 Hours',
     capacity: '450 kg Freezer Weight',
     warranty: '2 Years Structural Chassis',
-    imageUrl: '/vehicles/ev_icecream_van.jpg',
+    imageUrl: '/vehicles/icecream.webp',
     featured: false,
     status: 'Special Order',
     features: ['Direct DC Smart Freezer System', 'Colorful Built-in Music Player', 'Dynamic Multi-Color LED strip', 'Lockable Canopy Panels'],
-    motorType: '1000W Direct-Drive BLDC Motor',
-    colors: [
-      { name: 'Cyan Ocean', hex: '#06B6D4' },
-      { name: 'Pastel Pink', hex: '#EC4899' },
-      { name: 'Polar White', hex: '#F8FAFC' }
-    ]
+    motorType: '1000W Direct-Drive BLDC Motor'
   },
   {
     id: 'ev-6',
@@ -133,16 +105,11 @@ export const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Balanced',
     capacity: 'Standard E-Rickshaw Casing Fit',
     warranty: '3 Years Full Replacement Warranty',
-    imageUrl: '/vehicles/ev_lithium_pack.jpg',
+    imageUrl: '/vehicles/battery.jpg',
     featured: false,
     status: 'In Stock',
     features: ['Integrated Smart BMS Board', 'Flame-Retardant Metal Shell', 'IP67 dust and water rating', 'High Precision Cell Balancing'],
-    motorType: 'N/A (Battery Pack Unit)',
-    colors: [
-      { name: 'Electric Blue', hex: '#2563EB' },
-      { name: 'Amber Glow', hex: '#F59E0B' },
-      { name: 'Titanium Grey', hex: '#475569' }
-    ]
+    motorType: 'N/A (Battery Pack Unit)'
   }
 ];
 
@@ -191,23 +158,21 @@ export function getVehicles(): Vehicle[] {
   }
   try {
     const list = JSON.parse(saved);
-    // Backward compatibility merge: ensure motorType and other properties are standard
-    return list.map((vehicle: any) => {
+    // Backward compatibility & upgrade: replace any picsum placeholder with permanent real image
+    const upgraded = list.map((vehicle: any) => {
       const defaultMatch = SEED_VEHICLES.find(s => s.id === vehicle.id);
-      const isLegacyPlaceholder = !vehicle.imageUrl || vehicle.imageUrl.includes('picsum.photos');
+      const isPlaceholder = typeof vehicle.imageUrl === 'string' && (
+        vehicle.imageUrl.includes('picsum.photos') || 
+        vehicle.imageUrl.includes('images.unsplash.com')
+      );
       return {
         motorType: defaultMatch ? defaultMatch.motorType : '1200W High Torque Brushless DC Motor',
-        colors: vehicle.colors || defaultMatch?.colors || [
-          { name: 'Royal Blue', hex: '#1D4ED8' },
-          { name: 'Emerald Green', hex: '#059669' },
-          { name: 'Golden Yellow', hex: '#EAB308' },
-          { name: 'Signal Red', hex: '#DC2626' }
-        ],
         ...vehicle,
-        imageUrl: isLegacyPlaceholder && defaultMatch ? defaultMatch.imageUrl : vehicle.imageUrl
+        imageUrl: (isPlaceholder && defaultMatch) ? defaultMatch.imageUrl : vehicle.imageUrl
       };
     });
-  } catch {
+    return upgraded;
+  } catch (e) {
     return SEED_VEHICLES;
   }
 }
@@ -222,7 +187,12 @@ export function saveVehicle(vehicle: Vehicle): Vehicle[] {
   } else {
     current.push(vehicle);
   }
-  localStorage.setItem('garuda_vehicles', JSON.stringify(current));
+  try {
+    localStorage.setItem('garuda_vehicles', JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save to localStorage quota:', err);
+    alert('Warning: Image file size is too large for browser storage. Please pick a smaller image or use an image URL link.');
+  }
   return current;
 }
 
@@ -245,7 +215,7 @@ export function getEnquiries(): Enquiry[] {
   }
   try {
     return JSON.parse(saved);
-  } catch {
+  } catch (e) {
     return SEED_ENQUIRIES;
   }
 }
@@ -351,7 +321,7 @@ export function getReviews(): Review[] {
   }
   try {
     return JSON.parse(saved);
-  } catch {
+  } catch (e) {
     return SEED_REVIEWS;
   }
 }
