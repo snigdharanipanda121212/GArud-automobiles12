@@ -137,7 +137,7 @@ export default function AdminHubPage() {
   const [newVehicle, setNewVehicle] = useState<Omit<Vehicle, 'id' | 'featured'>>({
     name: '',
     category: 'E-Loader',
-    price: '₹1,45,000',
+    price: 'â‚¹1,45,000',
     range: '90-100 km',
     batteryType: '60V Lithium Cells',
     chargingTime: '4 Hours',
@@ -159,12 +159,14 @@ export default function AdminHubPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    // Check local login status
-    const logged = localStorage.getItem('garuda_admin_logged');
-    if (logged === 'true') {
-      setIsLoggedIn(true);
-    }
-    setVehicles(getVehicles());
+    fetch('/api/admin/session', { cache: 'no-store' })
+      .then(response => response.json())
+      .then(data => setIsLoggedIn(Boolean(data.authenticated)))
+      .catch(() => setIsLoggedIn(false));
+    fetch('/api/vehicles', { cache: 'no-store' })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('Catalogue unavailable')))
+      .then(data => setVehicles(data.vehicles || []))
+      .catch(() => setVehicles(getVehicles()));
     setEnquiries(getEnquiries());
     setReviews(getReviews());
   }, []);
@@ -229,7 +231,6 @@ export default function AdminHubPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        localStorage.setItem('garuda_admin_logged', 'true');
         setIsLoggedIn(true);
         setLoginError('');
       } else {
@@ -242,7 +243,8 @@ export default function AdminHubPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await fetch('/api/admin/session', { method: 'POST' }).catch(() => undefined);
     localStorage.removeItem('garuda_admin_logged');
     setIsLoggedIn(false);
     setUsername('');
@@ -282,7 +284,7 @@ export default function AdminHubPage() {
   };
 
   // Inventory Management
-  const handleCreateVehicleSubmit = (e: React.FormEvent) => {
+  const handleCreateVehicleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newVehicle.name || !newVehicle.price) {
       alert('Name of model and price are required.');
@@ -293,14 +295,26 @@ export default function AdminHubPage() {
       id: 'ev-user-' + Math.random().toString(36).substr(2, 5),
       featured: false
     };
-    const updated = saveVehicle(created);
-    setVehicles(updated);
+    try {
+      const response = await fetch('/api/admin/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(created),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not save vehicle.');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Could not save the vehicle to the shared catalogue.');
+      return;
+    }
+    saveVehicle(created);
+    setVehicles(current => [...current.filter(vehicle => vehicle.id !== created.id), created]);
     setIsAddingVehicle(false);
     // Reset form
     setNewVehicle({
       name: '',
       category: 'E-Loader',
-      price: '₹1,45,005',
+      price: 'â‚¹1,45,005',
       range: '90-100 km',
       batteryType: '60V Lithium Cells',
       chargingTime: '4 Hours',
@@ -313,7 +327,7 @@ export default function AdminHubPage() {
     });
   };
 
-  const compressImageFile = (file: File): Promise<string> => {
+  const compressImageFile = (file: File): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -342,9 +356,9 @@ export default function AdminHubPage() {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', 0.8));
+            canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Image compression failed')), 'image/jpeg', 0.82);
           } else {
-            resolve(event.target?.result as string);
+            reject(new Error('Canvas is unavailable'));
           }
         };
         img.onerror = () => reject(new Error('Image failed to decode'));
@@ -353,6 +367,16 @@ export default function AdminHubPage() {
       reader.onerror = () => reject(new Error('File reading failed'));
       reader.readAsDataURL(file);
     });
+  };
+
+  const uploadVehicleImage = async (file: File) => {
+    const compressed = await compressImageFile(file);
+    const form = new FormData();
+    form.append('file', compressed, 'vehicle.jpg');
+    const response = await fetch('/api/admin/upload-image', { method: 'POST', body: form });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Image upload failed.');
+    return result.imageUrl as string;
   };
 
   const handleLocalImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -366,16 +390,16 @@ export default function AdminHubPage() {
 
     try {
       setUploadProgress(40);
-      const compressedDataUrl = await compressImageFile(file);
+      const imageUrl = await uploadVehicleImage(file);
       setUploadProgress(85);
       setNewVehicle(prevVeh => ({
         ...prevVeh,
-        imageUrl: compressedDataUrl
+        imageUrl
       }));
       setUploadProgress(100);
       setTimeout(() => setUploadProgress(null), 400);
     } catch (err) {
-      alert('Failed to process image. Please try a different photo.');
+      alert(err instanceof Error ? err.message : 'Failed to upload image. Please try a different photo.');
       setUploadProgress(null);
     }
   };
@@ -388,23 +412,42 @@ export default function AdminHubPage() {
     if (!matched) return;
 
     try {
-      const compressedDataUrl = await compressImageFile(file);
+      const imageUrl = await uploadVehicleImage(file);
       const updatedVehicle: Vehicle = {
         ...matched,
-        imageUrl: compressedDataUrl
+        imageUrl
       };
-      const updatedList = saveVehicle(updatedVehicle);
-      setVehicles(updatedList);
+      const response = await fetch('/api/admin/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedVehicle),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not save photo.');
+      saveVehicle(updatedVehicle);
+      setVehicles(current => current.map(vehicle => vehicle.id === vehicleId ? updatedVehicle : vehicle));
       alert(`Photo updated successfully for ${matched.name}!`);
     } catch (err) {
-      alert('Could not update vehicle photo. Please try a different photo.');
+      alert(err instanceof Error ? err.message : 'Could not update vehicle photo. Please try a different photo.');
     }
   };
 
-  const handleDeleteVehicle = (id: string) => {
+  const handleDeleteVehicle = async (id: string) => {
     if (confirm('Permanently remove this vehicle configuration from live catalog?')) {
-      const updated = deleteVehicle(id);
-      setVehicles(updated);
+      try {
+        const response = await fetch('/api/admin/vehicles', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Could not remove the vehicle.');
+      } catch (error) {
+        alert(error instanceof Error ? error.message : 'Could not remove the vehicle from the shared catalogue.');
+        return;
+      }
+      deleteVehicle(id);
+      setVehicles(current => current.filter(vehicle => vehicle.id !== id));
     }
   };
 
@@ -633,10 +676,10 @@ export default function AdminHubPage() {
                             onChange={(e) => handleUpdateLeadStatus(lead.id, e.target.value as Enquiry['status'])}
                             className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs px-3 py-1.5 rounded-xl focus:outline-none focus:border-amber-500 cursor-pointer"
                           >
-                            <option value="New">🔴 New Lead</option>
-                            <option value="Contacted">🟡 Contacted</option>
-                            <option value="Follow-up">🔵 Follow-up</option>
-                            <option value="Closed">🟢 Closed File</option>
+                            <option value="New">ðŸ”´ New Lead</option>
+                            <option value="Contacted">ðŸŸ¡ Contacted</option>
+                            <option value="Follow-up">ðŸ”µ Follow-up</option>
+                            <option value="Closed">ðŸŸ¢ Closed File</option>
                           </select>
 
                           <button
@@ -743,7 +786,7 @@ export default function AdminHubPage() {
                       value={newVehicle.price}
                       onChange={(e) => setNewVehicle({ ...newVehicle, price: e.target.value })}
                       className="w-full bg-zinc-905 border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-amber-500"
-                      placeholder="₹1,50,000"
+                      placeholder="â‚¹1,50,000"
                     />
                   </div>
 
