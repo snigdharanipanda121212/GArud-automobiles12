@@ -21,8 +21,9 @@ export async function GET() {
     const savedVehicles = rows
       .filter(row => !row.is_deleted && row.data && typeof row.data === 'object')
       .map(row => row.data as ReturnType<typeof getVehicles>[number]);
+    const savedIds = new Set(savedVehicles.map(vehicle => vehicle.id));
     const vehicles = [
-      ...getVehicles().filter(vehicle => !deletedIds.has(vehicle.id)),
+      ...getVehicles().filter(vehicle => !deletedIds.has(vehicle.id) && !savedIds.has(vehicle.id)),
       ...savedVehicles,
     ];
     return NextResponse.json({ vehicles, storageConfigured: true });
