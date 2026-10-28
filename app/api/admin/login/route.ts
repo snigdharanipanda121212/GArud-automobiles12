@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_COOKIE_NAME, adminCookieOptions, createAdminSession } from '@/lib/admin-auth';
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,16 +8,17 @@ export async function POST(req: NextRequest) {
     const enteredUsername = (username || "").trim().toLowerCase();
     const enteredPassword = (password || "").trim();
 
-    // Default authenticating coordinates
-    const defaultUsername = 'Garudautomobiles';
-    const defaultPassword = 'garudautomobiles@1512025';
-
-    // Retrieve environment values from server-side environment (guaranteed never visible to the client browser)
-    const targetUsername = (process.env.ADMIN_USERNAME || defaultUsername).trim().toLowerCase();
-    const targetPassword = (process.env.ADMIN_PASSWORD || defaultPassword).trim();
+    const targetUsername = process.env.ADMIN_USERNAME?.trim().toLowerCase();
+    const targetPassword = process.env.ADMIN_PASSWORD;
+    if (!targetUsername || !targetPassword || !process.env.ADMIN_SESSION_SECRET) {
+      return NextResponse.json({ success: false, error: 'Admin login is not configured. Please contact the site administrator.' }, { status: 503 });
+    }
 
     if (enteredUsername === targetUsername && enteredPassword === targetPassword) {
-      return NextResponse.json({ success: true });
+      const session = createAdminSession();
+      const response = NextResponse.json({ success: true });
+      response.cookies.set(ADMIN_COOKIE_NAME, session.value, adminCookieOptions(session.maxAge));
+      return response;
     }
 
     return NextResponse.json(

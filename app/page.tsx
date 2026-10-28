@@ -39,21 +39,28 @@ export default function HomePage() {
   const [rotateY, setRotateY] = useState(-15);
 
   useEffect(() => {
-    // Sync vehicles list
-    const all = getVehicles();
-    // Double safeguard to make sure no e-scooters are present
-    const nonScooters = all.filter(v => v.category !== ('E-Scooter' as any));
-    setVehicles(nonScooters);
-
-    // Dynamic price limit calculation based on catalog content
-    const prices = nonScooters.map(v => parseInt(v.price.replace(/[^0-9]/g, ''), 10)).filter(p => !isNaN(p));
-    if (prices.length > 0) {
-      const min = Math.min(...prices);
-      const max = Math.max(...prices);
-      setMinPrice(min);
-      setMaxPrice(max);
-      setPrefPriceLimit(max); // Automatically set to show full catalog by default
-    }
+    const loadVehicles = async () => {
+      let all: Vehicle[];
+      try {
+        const response = await fetch('/api/vehicles', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Shared catalogue unavailable');
+        const data = await response.json();
+        all = Array.isArray(data.vehicles) ? data.vehicles : getVehicles();
+      } catch {
+        all = getVehicles();
+      }
+      const nonScooters = all.filter(v => v.category !== ('E-Scooter' as any));
+      setVehicles(nonScooters);
+      const prices = nonScooters.map(v => parseInt(v.price.replace(/[^0-9]/g, ''), 10)).filter(p => !isNaN(p));
+      if (prices.length > 0) {
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setMinPrice(min);
+        setMaxPrice(max);
+        setPrefPriceLimit(max);
+      }
+    };
+    void loadVehicles();
   }, []);
 
   // Sync Finder matched list
