@@ -16,9 +16,21 @@ export default function VehiclesPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    const list = getVehicles();
-    setVehicles(list);
-    setFilteredVehicles(list);
+    const loadVehicles = async () => {
+      try {
+        const response = await fetch('/api/vehicles', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Shared catalogue unavailable');
+        const data = await response.json();
+        const list = Array.isArray(data.vehicles) ? data.vehicles as Vehicle[] : getVehicles();
+        setVehicles(list);
+        setFilteredVehicles(list);
+      } catch {
+        const list = getVehicles();
+        setVehicles(list);
+        setFilteredVehicles(list);
+      }
+    };
+    void loadVehicles();
   }, []);
 
   // Sync Search and Filters
