@@ -13,6 +13,7 @@ export interface Vehicle {
   status: 'In Stock' | 'Available' | 'Special Order' | 'Out of Stock';
   features: string[];
   motorType: string;
+  colors?: string[];
 }
 
 export interface Enquiry {
