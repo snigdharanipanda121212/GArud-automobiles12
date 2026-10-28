@@ -137,7 +137,7 @@ export default function AdminHubPage() {
   const [newVehicle, setNewVehicle] = useState<Omit<Vehicle, 'id' | 'featured'>>({
     name: '',
     category: 'E-Loader',
-    price: 'â‚¹1,45,000',
+    price: '₹1,45,000',
     range: '90-100 km',
     batteryType: '60V Lithium Cells',
     chargingTime: '4 Hours',
@@ -314,7 +314,7 @@ export default function AdminHubPage() {
     setNewVehicle({
       name: '',
       category: 'E-Loader',
-      price: 'â‚¹1,45,005',
+      price: '₹1,45,005',
       range: '90-100 km',
       batteryType: '60V Lithium Cells',
       chargingTime: '4 Hours',
@@ -676,10 +676,10 @@ export default function AdminHubPage() {
                             onChange={(e) => handleUpdateLeadStatus(lead.id, e.target.value as Enquiry['status'])}
                             className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs px-3 py-1.5 rounded-xl focus:outline-none focus:border-amber-500 cursor-pointer"
                           >
-                            <option value="New">ðŸ”´ New Lead</option>
-                            <option value="Contacted">ðŸŸ¡ Contacted</option>
-                            <option value="Follow-up">ðŸ”µ Follow-up</option>
-                            <option value="Closed">ðŸŸ¢ Closed File</option>
+                            <option value="New">🔴 New Lead</option>
+                            <option value="Contacted">🟡 Contacted</option>
+                            <option value="Follow-up">🔵 Follow-up</option>
+                            <option value="Closed">🟢 Closed File</option>
                           </select>
 
                           <button
@@ -786,7 +786,7 @@ export default function AdminHubPage() {
                       value={newVehicle.price}
                       onChange={(e) => setNewVehicle({ ...newVehicle, price: e.target.value })}
                       className="w-full bg-zinc-905 border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-amber-500"
-                      placeholder="â‚¹1,50,000"
+                      placeholder="₹1,50,000"
                     />
                   </div>
 
