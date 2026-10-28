@@ -12,10 +12,10 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      supabaseUrl + '/rest/v1/vehicle_catalog?select=id,data,is_deleted',
-      { headers: { apikey: publicKey, Authorization: 'Bearer ' + publicKey }, cache: 'no-store' }
+      `${supabaseUrl}/rest/v1/vehicle_catalog?select=id,data,is_deleted`,
+      { headers: { apikey: publicKey, Authorization: `Bearer ${publicKey}` }, cache: 'no-store' }
     );
-    if (!response.ok) throw new Error('Catalogue read failed (' + response.status + ')');
+    if (!response.ok) throw new Error(`Catalogue read failed (${response.status})`);
     const rows = await response.json() as Array<{ id: string; data: unknown; is_deleted: boolean }>;
     const deletedIds = new Set(rows.filter(row => row.is_deleted).map(row => row.id));
     const savedVehicles = rows
