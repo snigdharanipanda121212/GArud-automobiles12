@@ -3,7 +3,7 @@
 import React from 'react';
 
 export default function WhatsAppButton() {
-  const whatsappUrl = "https://wa.me/918221822926?text=Hi%20Garud%20Automobiles,%20I%20want%20price%20details";
+  const whatsappUrl = "https://wa.me/918950977904?text=Hi%20Garud%20Automobiles,%20I%20want%20price%20details";
 
   return (
     <aside aria-label="Customer WhatsApp Contact" className="fixed bottom-6 right-6 z-50 flex items-center">

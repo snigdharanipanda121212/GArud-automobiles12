@@ -49,9 +49,21 @@ export default function EnquiryModal() {
           : 'Please details your query...'
       });
 
-      const vehiclesList = getVehicles();
-      const match = vehiclesList.find(v => v.name.toLowerCase() === selectedVehicle.toLowerCase());
-      setActiveVehicle(match || null);
+      const loadVehicle = async () => {
+        try {
+          const response = await fetch('/api/vehicles', { cache: 'no-store' });
+          if (!response.ok) throw new Error('Shared catalogue unavailable');
+          const data = await response.json();
+          const vehiclesList = Array.isArray(data.vehicles) ? data.vehicles as Vehicle[] : getVehicles();
+          const match = vehiclesList.find(v => v.name.toLowerCase() === selectedVehicle.toLowerCase());
+          setActiveVehicle(match || null);
+        } catch {
+          const vehiclesList = getVehicles();
+          const match = vehiclesList.find(v => v.name.toLowerCase() === selectedVehicle.toLowerCase());
+          setActiveVehicle(match || null);
+        }
+      };
+      void loadVehicle();
     }
   }, [isOpen, selectedVehicle, reset]);
 
@@ -118,6 +130,10 @@ export default function EnquiryModal() {
                     src={activeVehicle.imageUrl}
                     alt={activeVehicle.name}
                     className="w-full h-full object-cover"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = '/vehicles/cargo_loader_blue.jpg';
+                    }}
                   />
                   <div className="absolute bottom-3 left-3 bg-zinc-950/90 backdrop-blur border border-zinc-800 px-3 py-1 rounded-lg">
                     <span className="text-amber-400 text-sm font-bold">{activeVehicle.price}</span>

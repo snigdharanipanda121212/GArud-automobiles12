@@ -24,6 +24,7 @@ import {
 export default function HomePage() {
   const { openEnquiry } = useEnquiry();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
   const container3dRef = useRef<HTMLDivElement>(null);
   
   // Interactive match states
@@ -59,6 +60,7 @@ export default function HomePage() {
         setMaxPrice(max);
         setPrefPriceLimit(max);
       }
+      setIsCatalogLoading(false);
     };
     void loadVehicles();
   }, []);
@@ -512,6 +514,10 @@ export default function HomePage() {
                           src={vehicle.imageUrl}
                           alt={vehicle.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = '/vehicles/cargo_loader_blue.jpg';
+                          }}
                         />
                         
                         {/* Dynamic category badge + Finance Available label */}
@@ -620,7 +626,7 @@ export default function HomePage() {
                 ))}
               </AnimatePresence>
 
-              {matchResult.length === 0 && (
+              {!isCatalogLoading && matchResult.length === 0 && (
                 <div className="col-span-1 sm:col-span-2 py-16 text-center space-y-4 bg-zinc-950/20 border border-dashed border-zinc-900 rounded-3xl">
                   <span className="text-zinc-400 font-semibold block text-sm">No heavy-duty vehicles match your selection.</span>
                   <button
