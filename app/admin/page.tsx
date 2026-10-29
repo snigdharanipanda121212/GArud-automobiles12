@@ -143,7 +143,7 @@ export default function AdminHubPage() {
     chargingTime: '4 Hours',
     capacity: '750 kg',
     warranty: '3 Years Cells',
-    imageUrl: '/vehicles/loader.jpg',
+    imageUrl: '/vehicles/cargo_loader_blue.jpg',
     status: 'In Stock',
     features: ['LED Projection Lamp', 'Regenerative Braking'],
     motorType: '1200W Waterproof Brushless DC Motor'
@@ -320,7 +320,7 @@ export default function AdminHubPage() {
       chargingTime: '4 Hours',
       capacity: '750 kg',
       warranty: '3 Years Cells',
-      imageUrl: '/vehicles/loader.jpg',
+      imageUrl: '/vehicles/cargo_loader_blue.jpg',
       status: 'In Stock',
       features: ['LED Projection Lamp', 'Regenerative Braking'],
       motorType: '1200W Waterproof Brushless DC Motor'

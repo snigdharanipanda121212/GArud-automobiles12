@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getVehicles } from '@/lib/store';
+import { getVehicles, normalizeVehicle } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,10 +20,10 @@ export async function GET() {
     const deletedIds = new Set(rows.filter(row => row.is_deleted).map(row => row.id));
     const savedVehicles = rows
       .filter(row => !row.is_deleted && row.data && typeof row.data === 'object')
-      .map(row => row.data as ReturnType<typeof getVehicles>[number]);
+      .map(row => normalizeVehicle(row.data as ReturnType<typeof getVehicles>[number]));
     const savedIds = new Set(savedVehicles.map(vehicle => vehicle.id));
     const vehicles = [
-      ...getVehicles().filter(vehicle => !deletedIds.has(vehicle.id) && !savedIds.has(vehicle.id)),
+      ...getVehicles().map(normalizeVehicle).filter(vehicle => !deletedIds.has(vehicle.id) && !savedIds.has(vehicle.id)),
       ...savedVehicles,
     ];
     return NextResponse.json({ vehicles, storageConfigured: true });

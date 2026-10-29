@@ -42,7 +42,7 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '7-8 Hours Standard Charge',
     capacity: '750 kg Payload Limit',
     warranty: '1 Year Full Pack Warranty',
-    imageUrl: '/vehicles/loader.jpg',
+    imageUrl: '/vehicles/cargo_loader_blue.jpg',
     featured: true,
     status: 'In Stock',
     features: ['Reinforced Dual Suspensions', 'High-Torque Climbing Gear', 'Heavy Duty Sheet Metal Bed', 'Odisha RTO Load Certification'],
@@ -58,7 +58,7 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4 Hours Smart Charging',
     capacity: '5 Passengers + 1 Driver',
     warranty: '3 Years Mechanical & Electrical',
-    imageUrl: '/vehicles/erickshaw.jpg',
+    imageUrl: '/vehicles/erickshaw_passenger.jpg',
     featured: true,
     status: 'Available',
     features: ['Waterproof Fabric Canopy', 'Dual Tone Soft Cushioned Seats', 'Smart Digital Cabin Cluster', 'Under-Seat Security Storage'],
@@ -74,7 +74,7 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Fast Charge',
     capacity: '500 kg Flatbed Load',
     warranty: '2 Years Power Train',
-    imageUrl: '/vehicles/foodvan.webp',
+    imageUrl: '/vehicles/ev_food_van.jpg',
     featured: false,
     status: 'Special Order',
     features: ['Built-in 220V Inverter Port', 'Stainless Steel Dual Sinks', 'Extended Drop-down Shelf Tops', 'Full Overhead Dust Shields'],
@@ -90,7 +90,7 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '4.5 Hours',
     capacity: '450 kg Freezer Weight',
     warranty: '2 Years Structural Chassis',
-    imageUrl: '/vehicles/icecream.webp',
+    imageUrl: '/vehicles/ev_icecream_van.jpg',
     featured: false,
     status: 'Special Order',
     features: ['Direct DC Smart Freezer System', 'Colorful Built-in Music Player', 'Dynamic Multi-Color LED strip', 'Lockable Canopy Panels'],
@@ -106,7 +106,7 @@ const SEED_VEHICLES: Vehicle[] = [
     chargingTime: '3.5 Hours Balanced',
     capacity: 'Standard E-Rickshaw Casing Fit',
     warranty: '3 Years Full Replacement Warranty',
-    imageUrl: '/vehicles/battery.jpg',
+    imageUrl: '/vehicles/ev_lithium_pack.jpg',
     featured: false,
     status: 'In Stock',
     features: ['Integrated Smart BMS Board', 'Flame-Retardant Metal Shell', 'IP67 dust and water rating', 'High Precision Cell Balancing'],
@@ -149,6 +149,33 @@ function isClient() {
   return typeof window !== 'undefined';
 }
 
+// Older deployments used these filenames, but the repository contains the
+// corresponding optimized images under the names below.  This migration only
+// changes known broken local paths; uploaded Supabase URLs are left untouched.
+const LEGACY_IMAGE_PATHS: Record<string, string> = {
+  '/vehicles/loader.jpg': '/vehicles/cargo_loader_blue.jpg',
+  '/vehicles/cargo_loader_blue.jpg': '/vehicles/cargo_loader_blue.jpg',
+  '/vehicles/erickshaw.jpg': '/vehicles/erickshaw_passenger.jpg',
+  '/vehicles/erickshaw_passenger.jpg': '/vehicles/erickshaw_passenger.jpg',
+  '/vehicles/foodvan.webp': '/vehicles/ev_food_van.jpg',
+  '/vehicles/ev_food_van.jpg': '/vehicles/ev_food_van.jpg',
+  '/vehicles/icecream.webp': '/vehicles/ev_icecream_van.jpg',
+  '/vehicles/ev_icecream_van.jpg': '/vehicles/ev_icecream_van.jpg',
+  '/vehicles/battery.jpg': '/vehicles/ev_lithium_pack.jpg',
+  '/vehicles/ev_lithium_pack.jpg': '/vehicles/ev_lithium_pack.jpg',
+};
+
+export function normalizeVehicleImageUrl(imageUrl: unknown): string {
+  if (typeof imageUrl !== 'string') return '/vehicles/cargo_loader_blue.jpg';
+  const path = imageUrl.trim();
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return LEGACY_IMAGE_PATHS[normalizedPath] || path;
+}
+
+export function normalizeVehicle(vehicle: Vehicle): Vehicle {
+  return { ...vehicle, imageUrl: normalizeVehicleImageUrl(vehicle.imageUrl) };
+}
+
 export function getVehicles(): Vehicle[] {
   if (!isClient()) return SEED_VEHICLES;
   
@@ -172,7 +199,7 @@ export function getVehicles(): Vehicle[] {
         imageUrl: (isPlaceholder && defaultMatch) ? defaultMatch.imageUrl : vehicle.imageUrl
       };
     });
-    return upgraded;
+    return upgraded.map(normalizeVehicle);
   } catch (e) {
     return SEED_VEHICLES;
   }

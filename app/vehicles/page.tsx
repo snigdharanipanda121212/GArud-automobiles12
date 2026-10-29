@@ -10,6 +10,7 @@ export default function VehiclesPage() {
   const { openEnquiry } = useEnquiry();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +29,8 @@ export default function VehiclesPage() {
         const list = getVehicles();
         setVehicles(list);
         setFilteredVehicles(list);
+      } finally {
+        setIsLoading(false);
       }
     };
     void loadVehicles();
@@ -252,8 +255,18 @@ export default function VehiclesPage() {
             ))}
           </AnimatePresence>
 
-          {/* Fallback layout for empty search query */}
-          {filteredVehicles.length === 0 && (
+          {isLoading && (
+            <div className="col-span-3 py-20 text-center bg-zinc-950 border border-zinc-900 rounded-2xl p-8 space-y-4" role="status">
+              <div className="mx-auto h-10 w-10 rounded-full border-2 border-zinc-700 border-t-amber-500 animate-spin" />
+              <h3 className="text-lg font-bold text-white">Loading vehicle catalogue…</h3>
+              <p className="text-zinc-400 text-sm max-w-sm mx-auto leading-relaxed">
+                Retrieving the latest shared vehicle details and photos.
+              </p>
+            </div>
+          )}
+
+          {/* Only show an empty result after the shared catalogue has finished loading. */}
+          {!isLoading && filteredVehicles.length === 0 && (
             <div className="col-span-3 py-20 text-center bg-zinc-950 border border-zinc-900 rounded-2xl p-8 space-y-4">
               <div className="mx-auto bg-zinc-900 text-zinc-500 p-4 h-16 w-16 rounded-full flex items-center justify-center">
                 <HeartCrack className="w-7 h-7" />
