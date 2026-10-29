@@ -147,6 +147,10 @@ export default function VehiclesPage() {
                       src={vehicle.imageUrl}
                       alt={vehicle.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = '/vehicles/cargo_loader_blue.jpg';
+                      }}
                     />
                     
                     {/* Status Badge & Finance available tag */}

@@ -33,8 +33,17 @@ export default function ContactPage() {
   });
 
   useEffect(() => {
-    // Sync vehicles for select drop-down
-    setVehicles(getVehicles());
+    const loadVehicles = async () => {
+      try {
+        const response = await fetch('/api/vehicles', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Shared catalogue unavailable');
+        const data = await response.json();
+        setVehicles(Array.isArray(data.vehicles) ? data.vehicles : getVehicles());
+      } catch {
+        setVehicles(getVehicles());
+      }
+    };
+    void loadVehicles();
   }, []);
 
   const onSubmit = (data: ContactFormProps) => {

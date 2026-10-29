@@ -186,20 +186,10 @@ export function getVehicles(): Vehicle[] {
   }
   try {
     const list = JSON.parse(saved);
-    // Backward compatibility & upgrade: replace any picsum placeholder with permanent real image
-    const upgraded = list.map((vehicle: any) => {
-      const defaultMatch = SEED_VEHICLES.find(s => s.id === vehicle.id);
-      const isPlaceholder = typeof vehicle.imageUrl === 'string' && (
-        vehicle.imageUrl.includes('picsum.photos') || 
-        vehicle.imageUrl.includes('images.unsplash.com')
-      );
-      return {
-        motorType: defaultMatch ? defaultMatch.motorType : '1200W High Torque Brushless DC Motor',
-        ...vehicle,
-        imageUrl: (isPlaceholder && defaultMatch) ? defaultMatch.imageUrl : vehicle.imageUrl
-      };
-    });
-    return upgraded.map(normalizeVehicle);
+    if (!Array.isArray(list)) return SEED_VEHICLES;
+    // Preserve any valid remote image URL chosen in the admin panel. Only known
+    // legacy local paths are migrated by normalizeVehicle.
+    return list.map((vehicle: Vehicle) => normalizeVehicle(vehicle));
   } catch (e) {
     return SEED_VEHICLES;
   }
